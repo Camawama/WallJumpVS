@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.jahirtrap.walljump.init.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "net.jahirtrap.walljump.init.mixin.PlayerListMixin",
+    "net.jahirtrap.walljump.init.mixin.PlayerMixin"
+  ],
+  "client": [
+    "net.jahirtrap.walljump.init.mixin.ClientLevelMixin",
+    "net.jahirtrap.walljump.init.mixin.LocalPlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,24 @@
+package net.cama.walljumpvs.init;
+
+import net.cama.walljumpvs.enchantment.DoubleJumpEnchantment;
+import net.cama.walljumpvs.enchantment.SpeedBoostEnchantment;
+import net.cama.walljumpvs.enchantment.WallJumpEnchantment;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.enchantment.Enchantment;
+
+import static net.cama.walljumpvs.WallJumpMod.MODID;
+
+public class ModEnchantments {
+    public static final Enchantment WALL_JUMP = register("wall_jump", new WallJumpEnchantment(), ServerConfig.enableWallJump);
+    public static final Enchantment DOUBLE_JUMP = register("double_jump", new DoubleJumpEnchantment(), ServerConfig.enableDoubleJump);
+    public static final Enchantment SPEED_BOOST = register("speed_boost", new SpeedBoostEnchantment(), ServerConfig.enableSpeedBoost);
+
+    private static Enchantment register(String name, Enchantment enchantment, boolean enable) {
+        return (ServerConfig.enableEnchantments && enable) ? Registry.register(BuiltInRegistries.ENCHANTMENT, new ResourceLocation(MODID, name), enchantment) : null;
+    }
+
+    public static void init() {
+    }
+}

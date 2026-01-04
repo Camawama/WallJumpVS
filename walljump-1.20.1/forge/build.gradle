@@ -1,0 +1,146 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+    id 'me.modmuss50.mod-publish-plugin' version '0.6.3'
+}
+
+version = "${version}-forge"
+jarJar.enable()
+base.archivesName = mod_id
+
+mixin {
+    add(sourceSets.main, "${mod_id}.refmap.json")
+    config("${mod_id}.mixins.json")
+}
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformer = at
+    }
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+        data {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName 'Data'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+repositories {
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    mavenCentral()
+    maven { url = 'https://maven.minecraftforge.net' }
+    flatDir {
+        dir 'libs'
+    }
+    maven { url = 'https://maven.valkyrienskies.org' }
+    maven { url = 'https://thedarkcolour.github.io/KotlinForForge/' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly project(":common")
+
+    implementation fg.deobf("com.jahirtrap:configlibtxf:4.2.8-forge")
+    jarJar "com.jahirtrap:configlibtxf:[${configlibtxf_version}-forge,)"
+
+    implementation fg.deobf("thedarkcolour:kotlinforforge:4.11.0")
+    implementation fg.deobf("org.valkyrienskies:valkyrienskies-120-forge:2.3.0-beta.12")
+    implementation "org.valkyrienskies.core:api:+"
+    implementation "org.valkyrienskies.core:impl:+"
+    implementation "org.valkyrienskies.core:util:+"
+    implementation "org.joml:joml:1.10.5"
+}
+
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        minecraft_version: minecraft_version, minecraft_version_range: forge_minecraft_version_range,
+        forge_version: forge_version, forge_version_range: forge_version_range,
+        loader_version_range: forge_loader_version_range,
+        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: version,
+        mod_author: mod_author, mod_description: mod_description,
+        mod_url: mod_url, mod_issues: mod_issues, side: forge_side
+]
+
+processResources {
+    inputs.properties replaceProperties
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+    from project(":common").sourceSets.main.resources
+    exclude '**/data/c/**', '**/data/fabric/**'
+}
+
+tasks.jarJar.setArchiveClassifier('')
+tasks.jarJar.finalizedBy('reobfJarJar')
+jar.finalizedBy('jarJar')
+
+publishMods {
+    file = tasks.jarJar.archiveFile
+    displayName = "${mod_name} ${project.version}"
+    type = STABLE
+    modLoaders.addAll("forge", "neoforge")
+    changelog = rootProject.file("CHANGELOG.md").text
+    def gameVersions = ["1.20", "1.20.1"]
+
+    curseforge {
+        accessToken = System.getenv("CURSEFORGE_TOKEN")
+        projectId = "909143"
+        minecraftVersions.addAll(gameVersions)
+    }
+
+    modrinth {
+        accessToken = System.getenv("MODRINTH_TOKEN")
+        projectId = "oUoetxfR"
+        minecraftVersions.addAll(gameVersions)
+    }
+}
+
+["publishCurseforge", "publishModrinth", "publishMods"].each { task ->
+    tasks.named(task) {
+        mustRunAfter(":fabric:$task")
+    }
+}

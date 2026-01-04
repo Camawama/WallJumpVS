@@ -1,0 +1,1 @@
+- onFallWallCling config option ([Issue #27](https://github.com/jahirxtrap/walljump/issues/27))

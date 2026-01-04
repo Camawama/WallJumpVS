@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'me.modmuss50.mod-publish-plugin' version '0.6.3'
+}
+
+version = "${version}-fabric"
+base.archivesName = mod_id
+
+repositories {
+    maven {
+        name "modrinth"
+        url "https://api.modrinth.com/maven"
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    compileOnly project(":common")
+
+    modImplementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+loom {
+    def aw = file("src/main/resources/${mod_id}.aw")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            runDir("run")
+        }
+    }
+}
+
+def resourceTargets = ['fabric.mod.json']
+def replaceProperties = [
+        minecraft_version_range: fabric_minecraft_version_range,
+        loader_version_range: fabric_loader_version_range,
+        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: version,
+        mod_author: mod_author, mod_description: mod_description,
+        mod_url: mod_url, mod_issues: mod_issues, side: fabric_side,
+        configlibtxf_version: configlibtxf_version, keybindfixtxf_version: keybindfixtxf_version
+]
+
+processResources {
+    inputs.properties replaceProperties
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+    from project(":common").sourceSets.main.resources
+    exclude '**/data/forge/**'
+}
+
+jar {
+    from('libs') {
+        include '*.jar'
+        into('META-INF/jars')
+    }
+}
+
+jar.finalizedBy('remapJar')
+
+publishMods {
+    file = remapJar.archiveFile
+    displayName = "${mod_name} ${project.version}"
+    type = BETA
+    modLoaders.addAll("fabric", "quilt")
+    changelog = rootProject.file("CHANGELOG.md").text
+    def gameVersions = ["1.20", "1.20.1"]
+
+    curseforge {
+        accessToken = System.getenv("CURSEFORGE_TOKEN")
+        projectId = "909143"
+        minecraftVersions.addAll(gameVersions)
+    }
+
+    modrinth {
+        accessToken = System.getenv("MODRINTH_TOKEN")
+        projectId = "oUoetxfR"
+        minecraftVersions.addAll(gameVersions)
+    }
+}
