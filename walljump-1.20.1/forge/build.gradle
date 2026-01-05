@@ -88,7 +88,7 @@ dependencies {
     jarJar "com.jahirtrap:configlibtxf:[${configlibtxf_version}-forge,)"
 
     implementation fg.deobf("thedarkcolour:kotlinforforge:4.11.0")
-    implementation fg.deobf("org.valkyrienskies:valkyrienskies-120-forge:2.3.0-beta.12")
+    implementation fg.deobf("org.valkyrienskies:valkyrienskies-120-forge:2.4.5")
     implementation "org.valkyrienskies.core:api:+"
     implementation "org.valkyrienskies.core:impl:+"
     implementation "org.valkyrienskies.core:util:+"
