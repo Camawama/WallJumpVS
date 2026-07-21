@@ -1,11 +1,15 @@
 package net.cama.walljumpvs.init;
 
 import net.cama.walljumpvs.init.ModConfig.BlockListMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
 public class ServerConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger("walljumpvs");
+
     public static boolean allowReClinging = ModConfig.allowReClinging;
     public static boolean onFallDoubleJump = ModConfig.onFallDoubleJump;
     public static boolean onFallWallCling = ModConfig.onFallWallCling;
@@ -29,13 +33,9 @@ public class ServerConfig {
     public static double speedBoostMultiplier = ModConfig.speedBoostMultiplier;
 
     public static void reset() {
-        try {
-            Field[] fields = ServerConfig.class.getDeclaredFields();
-            for (Field field : fields) {
-                Field config = ModConfig.class.getDeclaredField(field.getName());
-                field.set(null, config.get(null));
-            }
-        } catch (Exception ignored) {
+        for (Field field : ServerConfig.class.getDeclaredFields()) {
+            if (field.getName().equals("LOGGER")) continue;
+            reset(field.getName());
         }
     }
 
@@ -44,7 +44,8 @@ public class ServerConfig {
             Field serverField = ServerConfig.class.getDeclaredField(config);
             Field modField = ModConfig.class.getDeclaredField(config);
             serverField.set(null, modField.get(null));
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            LOGGER.warn("Failed to reset synced server config value '{}'", config, e);
         }
     }
 }

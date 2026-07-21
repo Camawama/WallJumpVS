@@ -1,7 +1,8 @@
-<h2><strong>Wall-Jump TXF mod</strong></h2>
-<p><a href="https://www.curseforge.com/minecraft/mc-mods/wall-jump-txf"><img src="https://cf.way2muchnoise.eu/full_909143_downloads.svg?badge_style=flat" alt="CurseForge downloads" /></a> <a href="https://modrinth.com/mod/wall-jump-txf"><img src="https://img.shields.io/badge/dynamic/json?color=2d2d2d&amp;colorA=17b85a&amp;style=flat-square&amp;label=&amp;suffix= downloads&amp;query=downloads&amp;url=https://api.modrinth.com/v2/project/oUoetxfR&amp;logo=modrinth&amp;logoColor=2d2d2d" alt="Modrinth downloads" /></a></p>
+<h2><strong>Wall Jump VS</strong></h2>
 
-Wall jump, double jump, fence jump & more
+Wall jump, double jump, fence jump & more — now with **Valkyrien Skies** support!
+
+Wall Jump VS is a fork of [Wall-Jump TXF](https://github.com/jahirxtrap/walljump) (by jahirxtrap, originally by genandnic) that lets you use every wall-jump move on the hulls of moving [Valkyrien Skies](https://modrinth.com/mod/valkyrien-skies) ships. Cling to a ship wall and the game follows the ship as it moves and turns; cling too long and you'll slide down, just like on regular walls.
 
 <strong>This mod adds:</strong>
 
@@ -15,8 +16,11 @@ Wall jump, double jump, fence jump & more
 
 <strong>Steep Assist:</strong> Walk up steps even while airborne, also jump over fences
 
-<strong>Fabric/Quilt dependencies:</strong>
+<strong>Valkyrien Skies support:</strong> All of the above works on VS ship walls — including moving and rotating ships
 
-- <a href="https://modrinth.com/mod/modmenu" target="_blank">Mod Menu mod</a> <strong>(Optional)</strong>
+<strong>Dependencies:</strong>
 
-<img src="https://cdn.modrinth.com/data/oUoetxfR/images/ccab85538f124c14fc7b772ddaff7c4c4097593a.png">
+- <a href="https://modrinth.com/mod/valkyrien-skies" target="_blank">Valkyrien Skies</a> <strong>(Optional)</strong> — required only for ship wall jumping; the mod works fine without it
+- <a href="https://modrinth.com/mod/modmenu" target="_blank">Mod Menu</a> <strong>(Optional, Fabric/Quilt)</strong>
+
+<strong>Credits:</strong> genandnic (original Wall-Jump!), jahirxtrap (Wall-Jump TXF)

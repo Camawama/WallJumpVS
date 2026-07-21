@@ -11,12 +11,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import static net.cama.walljumpvs.WallJumpMod.MODID;
 
 public class ModEnchantments {
-    public static final Enchantment WALL_JUMP = register("wall_jump", new WallJumpEnchantment(), ServerConfig.enableWallJump);
-    public static final Enchantment DOUBLE_JUMP = register("double_jump", new DoubleJumpEnchantment(), ServerConfig.enableDoubleJump);
-    public static final Enchantment SPEED_BOOST = register("speed_boost", new SpeedBoostEnchantment(), ServerConfig.enableSpeedBoost);
+    // Always registered; config gates availability inside the enchantment classes.
+    public static final Enchantment WALL_JUMP = register("wall_jump", new WallJumpEnchantment());
+    public static final Enchantment DOUBLE_JUMP = register("double_jump", new DoubleJumpEnchantment());
+    public static final Enchantment SPEED_BOOST = register("speed_boost", new SpeedBoostEnchantment());
 
-    private static Enchantment register(String name, Enchantment enchantment, boolean enable) {
-        return (ServerConfig.enableEnchantments && enable) ? Registry.register(BuiltInRegistries.ENCHANTMENT, new ResourceLocation(MODID, name), enchantment) : null;
+    private static Enchantment register(String name, Enchantment enchantment) {
+        return Registry.register(BuiltInRegistries.ENCHANTMENT, new ResourceLocation(MODID, name), enchantment);
     }
 
     public static void init() {

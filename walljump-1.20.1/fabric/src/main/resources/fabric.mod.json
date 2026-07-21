@@ -20,10 +20,10 @@
 	"environment": "${side}",
 	"entrypoints": {
 		"main": [
-          "net.jahirtrap.walljump.WallJumpMod"
+          "net.cama.walljumpvs.WallJumpMod"
 		],
 		"client": [
-          "net.jahirtrap.walljump.WallJumpClient"
+          "net.cama.walljumpvs.WallJumpClient"
 		]
 	},
 	"mixins": [
@@ -34,6 +34,9 @@
 		"minecraft": "${minecraft_version_range}",
 		"java": ">=17",
 		"fabric-api": "*"
+	},
+	"suggests": {
+		"valkyrienskies": ">=2.4.0"
 	},
 	"jars": [
 		{"file": "META-INF/jars/configlibtxf-${configlibtxf_version}-fabric.jar"},

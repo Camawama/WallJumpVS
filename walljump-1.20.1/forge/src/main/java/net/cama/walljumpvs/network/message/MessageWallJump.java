@@ -1,5 +1,6 @@
 package net.cama.walljumpvs.network.message;
 
+import net.cama.walljumpvs.init.ModConfig;
 import net.cama.walljumpvs.init.ServerConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,7 +21,8 @@ public record MessageWallJump(boolean didWallJump) {
     public static void handle(MessageWallJump message, Supplier<NetworkEvent.Context> supplier) {
         supplier.get().enqueueWork(() -> {
             ServerPlayer player = supplier.get().getSender();
-            if (player != null && message.didWallJump) {
+            boolean wallJumpEnabled = ModConfig.useWallJump || (ModConfig.enableEnchantments && ModConfig.enableWallJump);
+            if (player != null && message.didWallJump && wallJumpEnabled) {
                 player.resetFallDistance();
                 player.causeFoodExhaustion((float) ServerConfig.exhaustionWallJump);
             }

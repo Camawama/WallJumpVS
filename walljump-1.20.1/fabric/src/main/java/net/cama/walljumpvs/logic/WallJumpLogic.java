@@ -1,6 +1,7 @@
 package net.cama.walljumpvs.logic;
 
 import net.cama.walljumpvs.WallJumpClient;
+import net.cama.walljumpvs.compat.VSCompat;
 import net.cama.walljumpvs.init.ModConfig;
 import net.cama.walljumpvs.init.ModConfig.BlockListMode;
 import net.cama.walljumpvs.init.ModEnchantments;
@@ -11,6 +12,7 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,6 +42,9 @@ import java.util.Set;
 @Environment(EnvType.CLIENT)
 public class WallJumpLogic {
 
+    // VS classes are only touched through VSCompat, and only when the mod is present.
+    private static final boolean VS_LOADED = FabricLoader.getInstance().isModLoaded("valkyrienskies");
+
     public static int ticksWallClinged;
     public static int ticksWallSlid;
     public static boolean stopSlid = false;
@@ -52,6 +57,11 @@ public class WallJumpLogic {
 
     private static boolean collidesWithBlock(Level level, AABB box) {
         return !level.noCollision(box);
+    }
+
+    // The compat can be switched off in the config even when VS is installed.
+    private static boolean vsEnabled() {
+        return VS_LOADED && ModConfig.enableVSCompat;
     }
 
     public static void doWallJump(LocalPlayer pl) {
@@ -67,6 +77,10 @@ public class WallJumpLogic {
             lastJumpY = Double.MAX_VALUE;
             staleWalls.clear();
             wallJumpCount = 0;
+            if (VS_LOADED) {
+                VSCompat.clearShipWalls();
+                VSCompat.clearClingAnchor();
+            }
 
             return;
         }
@@ -78,7 +92,9 @@ public class WallJumpLogic {
 
         if (ticksWallClinged < 1) {
             if (ticksKeyDown > 0 && ticksKeyDown < 4 && !walls.isEmpty() && canWallCling(pl)) {
-                if (ModConfig.autoRotation) {
+                // A rotated ship's wall normal is rarely axis-aligned, so snapping
+                // the camera to a cardinal direction looks wrong there.
+                if (ModConfig.autoRotation && !(vsEnabled() && VSCompat.isShipWall(getClingDirection()))) {
                     pl.setYRot(getClingDirection().getOpposite().toYRot());
                     pl.yRotO = pl.getYRot();
                 }
@@ -86,6 +102,7 @@ public class WallJumpLogic {
                 ticksWallClinged = 1;
                 clingX = pl.getX();
                 clingZ = pl.getZ();
+                if (vsEnabled()) VSCompat.captureClingAnchor(pl, getClingDirection());
 
                 playHitSound(pl, getWallPos(pl));
                 spawnWallParticle(pl, getWallPos(pl));
@@ -96,6 +113,7 @@ public class WallJumpLogic {
 
         if (!WallJumpClient.KEY_WALL_JUMP.isDown() || pl.onGround() || !pl.level().getFluidState(pl.blockPosition()).isEmpty() || walls.isEmpty() || pl.getFoodData().getFoodLevel() < 1) {
             ticksWallClinged = 0;
+            if (VS_LOADED) VSCompat.clearClingAnchor();
 
             if ((pl.input.forwardImpulse != 0 || pl.input.leftImpulse != 0) && !pl.onGround() && !walls.isEmpty()) {
                 if (wallJumpCount >= ServerConfig.maxWallJumps) return;
@@ -111,9 +129,20 @@ public class WallJumpLogic {
             return;
         }
 
+        Vec3 shipVelocity = Vec3.ZERO;
+        if (vsEnabled() && ModConfig.stickToMovingShips) {
+            Vec3 shipAnchor = VSCompat.getClingWorldPos();
+            if (shipAnchor != null) {
+                clingX = shipAnchor.x;
+                clingZ = shipAnchor.z;
+                shipVelocity = VSCompat.getClingPointVelocity();
+            }
+        }
         pl.setPos(clingX, pl.getY(), clingZ);
 
-        double motionY = pl.getDeltaMovement().y;
+        // Slide states are judged relative to the ship so its motion neither
+        // triggers nor cancels them; the ship's motion is added back at the end.
+        double motionY = pl.getDeltaMovement().y - shipVelocity.y;
         if (motionY > 0.0) {
             motionY = 0.0;
         } else if (motionY < -0.6) {
@@ -134,7 +163,7 @@ public class WallJumpLogic {
             ClientPlayNetworking.send(MessageFallDistance.ID, buffer);
         }
 
-        pl.setDeltaMovement(0.0, motionY, 0.0);
+        pl.setDeltaMovement(0.0, motionY + shipVelocity.y, 0.0);
     }
 
     private static boolean canWallJump(LocalPlayer pl) {
@@ -151,11 +180,33 @@ public class WallJumpLogic {
     }
 
     private static boolean canWallCling(LocalPlayer pl) {
-        if (pl.onClimbable() || pl.getDeltaMovement().y > 0.1 || pl.getFoodData().getFoodLevel() < 1) return false;
-        if (collidesWithBlock(pl.level(), pl.getBoundingBox().move(0, -0.8, 0))) return false;
-        if (!ServerConfig.onFallWallCling && pl.getDeltaMovement().y < -0.8) return false;
+        if (pl.onClimbable() || pl.getFoodData().getFoodLevel() < 1) return false;
+        Vec3 velocity = clingVelocity(pl);
+        if (velocity.y > 0.1) return false;
+        AABB below = pl.getBoundingBox().move(0, -0.8, 0);
+        if (collidesWithBlock(pl.level(), below)) return false;
+        // Deflated so millimeter penetration into the cling wall itself does not
+        // read as ground; ships resolve collisions with a little slop.
+        if (vsEnabled() && VSCompat.intersectsShipBlock(pl.level(), below.deflate(0.05, 0.0, 0.05))) return false;
+        if (!ServerConfig.onFallWallCling && velocity.y < -0.8) return false;
         if (ServerConfig.allowReClinging || pl.getY() < lastJumpY - 1) return true;
         return !staleWalls.containsAll(walls);
+    }
+
+    /**
+     * Velocity used for cling checks: relative to the ship when the candidate
+     * wall belongs to one, so cling behaves the same on a moving ship.
+     */
+    private static Vec3 clingVelocity(LocalPlayer pl) {
+        if (vsEnabled() && hasShipWall()) return VSCompat.getRelativeVelocity(pl);
+        return pl.getDeltaMovement();
+    }
+
+    private static boolean hasShipWall() {
+        for (Direction direction : walls) {
+            if (VSCompat.isShipWall(direction)) return true;
+        }
+        return false;
     }
 
     private static void updateWalls(LocalPlayer pl) {
@@ -165,16 +216,40 @@ public class WallJumpLogic {
         double dist = (pl.getBbWidth() / 2) + (ticksWallClinged > 0 ? 0.1 : 0.06);
         AABB[] axes = {box.expandTowards(0, 0, dist), box.expandTowards(-dist, 0, 0), box.expandTowards(0, 0, -dist), box.expandTowards(dist, 0, 0)};
 
-        int i = 0;
-        Direction direction;
-        walls = new HashSet<>();
-        for (AABB axis : axes) {
-            direction = Direction.from2DDataValue(i++);
+        // A rotated ship stops the player at a corner of their bounding box, out
+        // of reach of the thin centered probes above, so ships are probed with
+        // the whole box instead: it already touches the wall at any rotation.
+        boolean vs = vsEnabled();
+        AABB[] shipProbes = null;
+        if (vs) {
+            double reach = ModConfig.shipWallDetectionRange + (ticksWallClinged > 0 ? 0.04 : 0.0);
+            AABB bb = pl.getBoundingBox();
+            shipProbes = new AABB[]{bb.expandTowards(0, 0, reach), bb.expandTowards(-reach, 0, 0), bb.expandTowards(0, 0, -reach), bb.expandTowards(reach, 0, 0)};
+        }
 
-            if (collidesWithBlock(pl.level(), axis)) {
+        walls = new HashSet<>();
+        if (VS_LOADED) VSCompat.clearShipWalls();
+
+        for (int i = 0; i < 4; i++) {
+            Direction direction = Direction.from2DDataValue(i);
+
+            if (collidesWithBlock(pl.level(), axes[i])) {
                 if (ServerConfig.blockListMode == BlockListMode.DISABLED || ServerConfig.blockList.isEmpty() || areBlocksAllowed(getBlockId(pl, pl.blockPosition().relative(direction)), getBlockId(pl, pl.blockPosition().above().relative(direction)))) {
                     walls.add(direction);
                     pl.horizontalCollision = true;
+                    continue;
+                }
+            }
+
+            if (vs) {
+                BlockPos shipWall = VSCompat.findShipWall(pl, shipProbes[i], direction);
+                if (shipWall != null) {
+                    if (ServerConfig.blockListMode == BlockListMode.DISABLED || ServerConfig.blockList.isEmpty() || areBlocksAllowed(getBlockId(pl, shipWall), getBlockId(pl, shipWall.above()))) {
+                        walls.add(direction);
+                        pl.horizontalCollision = true;
+                    } else {
+                        VSCompat.forgetShipWall(direction);
+                    }
                 }
             }
         }
@@ -200,7 +275,12 @@ public class WallJumpLogic {
     }
 
     private static BlockPos getWallPos(LocalPlayer player) {
-        BlockPos blockPos = player.getOnPos().relative(getClingDirection());
+        Direction direction = getClingDirection();
+        if (VS_LOADED) {
+            BlockPos shipWall = VSCompat.getShipWallPos(direction);
+            if (shipWall != null) return shipWall;
+        }
+        BlockPos blockPos = player.getOnPos().relative(direction);
         return player.level().getBlockState(blockPos).isSolid() ? blockPos : blockPos.relative(Direction.UP);
     }
 

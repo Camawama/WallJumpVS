@@ -1,5 +1,6 @@
 package net.cama.walljumpvs.network.message;
 
+import net.cama.walljumpvs.init.ModConfig;
 import net.cama.walljumpvs.init.ServerConfig;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.FriendlyByteBuf;
@@ -16,7 +17,8 @@ public class MessageWallJump {
     public static void handle(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buffer, PacketSender sender) {
         var didWallJump = buffer.readBoolean();
         server.execute(() -> {
-            if (didWallJump) {
+            boolean wallJumpEnabled = ModConfig.useWallJump || (ModConfig.enableEnchantments && ModConfig.enableWallJump);
+            if (didWallJump && wallJumpEnabled) {
                 player.resetFallDistance();
                 player.causeFoodExhaustion((float) ServerConfig.exhaustionWallJump);
             }

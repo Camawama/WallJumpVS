@@ -45,7 +45,10 @@ public abstract class PlayerListMixin {
         buffer.writeBoolean(ModConfig.enableSpeedBoost);
         buffer.writeDouble(ModConfig.speedBoostMultiplier);
 
-        PacketHandler.sendToPlayer(player, new MessageServerConfig(buffer.array()));
+        // Send only the written bytes, not the buffer's whole backing array.
+        byte[] data = new byte[buffer.writerIndex()];
+        buffer.getBytes(0, data);
+        PacketHandler.sendToPlayer(player, new MessageServerConfig(data));
     }
 
     @Unique

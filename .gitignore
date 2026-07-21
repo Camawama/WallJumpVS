@@ -1,0 +1,11 @@
+# IDE
+.idea/
+*.iml
+out/
+
+# Gradle
+build/
+.gradle/
+
+# Minecraft run directories
+run/

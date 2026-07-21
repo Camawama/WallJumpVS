@@ -6,7 +6,7 @@ import com.jahirtrap.configlib.TXFConfig;
 import java.util.List;
 
 public class ModConfig extends TXFConfig {
-    public static final String GENERAL = "general", ENCHANTMENTS = "enchantments";
+    public static final String GENERAL = "general", VALKYRIEN_SKIES = "valkyrienSkies", ENCHANTMENTS = "enchantments";
 
     @Entry(category = GENERAL, name = "Allow Re Clinging")
     public static boolean allowReClinging = true;
@@ -44,6 +44,13 @@ public class ModConfig extends TXFConfig {
     public static List<String> blockList = Lists.newArrayList();
     @Entry(category = GENERAL, name = "Block List Mode")
     public static BlockListMode blockListMode = BlockListMode.BLACKLIST;
+
+    @Entry(category = VALKYRIEN_SKIES, name = "Enable Valkyrien Skies Compat")
+    public static boolean enableVSCompat = true;
+    @Entry(category = VALKYRIEN_SKIES, name = "Ship Wall Detection Range", min = 0.01, max = 0.5)
+    public static double shipWallDetectionRange = 0.06;
+    @Entry(category = VALKYRIEN_SKIES, name = "Cling Sticks To Moving Ships")
+    public static boolean stickToMovingShips = true;
 
     @Entry(category = ENCHANTMENTS, name = "Enable Enchantments", itemDisplay = "minecraft:enchanted_book")
     public static boolean enableEnchantments = true;

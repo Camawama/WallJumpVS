@@ -1,5 +1,6 @@
 package net.cama.walljumpvs.enchantment;
 
+import net.cama.walljumpvs.init.ServerConfig;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
@@ -34,5 +35,17 @@ public class SpeedBoostEnchantment extends Enchantment {
     @Override
     public boolean canEnchant(ItemStack stack) {
         return super.canEnchant(stack) || stack.getItem() instanceof ElytraItem;
+    }
+
+    // The enchantment is always registered; config only controls availability,
+    // so existing enchanted items survive config changes.
+    @Override
+    public boolean isDiscoverable() {
+        return ServerConfig.enableEnchantments && ServerConfig.enableSpeedBoost;
+    }
+
+    @Override
+    public boolean isTradeable() {
+        return ServerConfig.enableEnchantments && ServerConfig.enableSpeedBoost;
     }
 }

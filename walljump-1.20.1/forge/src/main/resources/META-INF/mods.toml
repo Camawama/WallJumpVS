@@ -27,3 +27,11 @@ issueTrackerURL = "${mod_issues}"
     versionRange = "${minecraft_version_range}"
     ordering = "NONE"
     side = "${side}"
+
+# Valkyrien Skies is optional: ship wall jumping activates only when it is installed.
+[[dependencies.${mod_id}]]
+    modId = "valkyrienskies"
+    mandatory = false
+    versionRange = "[2.4.0,)"
+    ordering = "AFTER"
+    side = "${side}"

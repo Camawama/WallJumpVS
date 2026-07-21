@@ -1,5 +1,6 @@
 package net.cama.walljumpvs.enchantment;
 
+import net.cama.walljumpvs.init.ServerConfig;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
@@ -35,5 +36,17 @@ public class DoubleJumpEnchantment extends Enchantment {
         if (enchantment instanceof ProtectionEnchantment protection)
             return protection.type != ProtectionEnchantment.Type.FALL;
         return this != enchantment;
+    }
+
+    // The enchantment is always registered; config only controls availability,
+    // so existing enchanted items survive config changes.
+    @Override
+    public boolean isDiscoverable() {
+        return ServerConfig.enableEnchantments && ServerConfig.enableDoubleJump;
+    }
+
+    @Override
+    public boolean isTradeable() {
+        return ServerConfig.enableEnchantments && ServerConfig.enableDoubleJump;
     }
 }

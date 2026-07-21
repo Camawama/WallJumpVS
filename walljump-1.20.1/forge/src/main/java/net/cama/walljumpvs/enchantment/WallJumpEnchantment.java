@@ -1,5 +1,6 @@
 package net.cama.walljumpvs.enchantment;
 
+import net.cama.walljumpvs.init.ServerConfig;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
@@ -27,5 +28,17 @@ public class WallJumpEnchantment extends Enchantment {
     @Override
     public int getMaxCost(int level) {
         return 60;
+    }
+
+    // The enchantment is always registered; config only controls availability,
+    // so existing enchanted items survive config changes.
+    @Override
+    public boolean isDiscoverable() {
+        return ServerConfig.enableEnchantments && ServerConfig.enableWallJump;
+    }
+
+    @Override
+    public boolean isTradeable() {
+        return ServerConfig.enableEnchantments && ServerConfig.enableWallJump;
     }
 }

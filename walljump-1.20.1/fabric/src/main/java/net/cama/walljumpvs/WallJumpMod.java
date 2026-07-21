@@ -8,7 +8,7 @@ import net.fabricmc.api.ModInitializer;
 
 public class WallJumpMod implements ModInitializer {
 
-    public static final String MODID = "walljump";
+    public static final String MODID = "walljumpvs";
 
     @Override
     public void onInitialize() {
