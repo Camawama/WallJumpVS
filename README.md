@@ -1,8 +1,8 @@
-<h2><strong>Wall Jump VS</strong></h2>
+<h2><strong>WallJump Unbound</strong></h2>
 
 Wall jump, double jump, fence jump & more — now with **Valkyrien Skies** support!
 
-Wall Jump VS is a fork of [Wall-Jump TXF](https://github.com/jahirxtrap/walljump) (by jahirxtrap, originally by genandnic) that lets you use every wall-jump move on the hulls of moving [Valkyrien Skies](https://modrinth.com/mod/valkyrien-skies) ships. Cling to a ship wall and the game follows the ship as it moves and turns; cling too long and you'll slide down, just like on regular walls.
+WallJump Unbound is a fork of [Wall-Jump TXF](https://github.com/jahirxtrap/walljump) (by jahirxtrap, originally by genandnic) that lets you use every wall-jump move on the hulls of moving [Valkyrien Skies](https://modrinth.com/mod/valkyrien-skies) ships. Cling to a ship wall and the game follows the ship as it moves and turns; cling too long and you'll slide down, just like on regular walls.
 
 <strong>This mod adds:</strong>
 

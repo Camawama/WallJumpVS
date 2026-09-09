@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.camacraft.walljumpunbound.init.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "PlayerListMixin",
+    "PlayerMixin"
+  ],
+  "client": [
+    "AbstractClientPlayerMixin",
+    "ClientLevelMixin",
+    "LocalPlayerMixin",
+    "PlayerModelMixin",
+    "PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "walljumpunbound.refmap.json"
+}

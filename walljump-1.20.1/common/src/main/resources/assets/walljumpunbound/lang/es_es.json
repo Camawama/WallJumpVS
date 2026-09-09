@@ -1,0 +1,10 @@
+{
+  "key.categories.walljump": "Wall-Jump",
+  "key.walljump.walljump": "Salto de pared / Aferrarse a la pared",
+  "enchantment.walljumpunbound.wall_jump": "Salto de pared",
+  "enchantment.walljumpunbound.double_jump": "Salto doble",
+  "enchantment.walljumpunbound.speed_boost": "Velocidad",
+  "enchantment.walljumpunbound.wall_jump.desc": "Saltar de pared en pared",
+  "enchantment.walljumpunbound.double_jump.desc": "Salta en el aire para hacer un doble salto",
+  "enchantment.walljumpunbound.speed_boost.desc": "Aumenta tu velocidad mientras corres"
+}

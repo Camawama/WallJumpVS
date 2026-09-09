@@ -20,10 +20,10 @@
 	"environment": "${side}",
 	"entrypoints": {
 		"main": [
-          "net.cama.walljumpvs.WallJumpMod"
+          "net.camacraft.walljumpunbound.WallJumpMod"
 		],
 		"client": [
-          "net.cama.walljumpvs.WallJumpClient"
+          "net.camacraft.walljumpunbound.WallJumpClient"
 		]
 	},
 	"mixins": [

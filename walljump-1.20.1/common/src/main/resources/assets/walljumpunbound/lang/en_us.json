@@ -1,0 +1,10 @@
+{
+  "key.categories.walljump": "Wall-Jump",
+  "key.walljump.walljump": "Wall Jump / Wall Cling",
+  "enchantment.walljumpunbound.wall_jump": "Wall Jump",
+  "enchantment.walljumpunbound.double_jump": "Double Jump",
+  "enchantment.walljumpunbound.speed_boost": "Speed Boost",
+  "enchantment.walljumpunbound.wall_jump.desc": "Jump from wall to wall",
+  "enchantment.walljumpunbound.double_jump.desc": "Jump in mid-air to double jump",
+  "enchantment.walljumpunbound.speed_boost.desc": "Boosts your speed while sprinting"
+}
