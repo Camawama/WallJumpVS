@@ -8,8 +8,11 @@
     "PlayerMixin"
   ],
   "client": [
+    "AbstractClientPlayerMixin",
     "ClientLevelMixin",
-    "LocalPlayerMixin"
+    "LocalPlayerMixin",
+    "PlayerModelMixin",
+    "PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

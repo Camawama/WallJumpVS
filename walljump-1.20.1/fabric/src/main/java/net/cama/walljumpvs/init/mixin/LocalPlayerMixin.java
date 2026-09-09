@@ -21,6 +21,7 @@ public abstract class LocalPlayerMixin {
 
         WallJumpClient.playFallingSound(pl);
         WallJumpLogic.doWallJump(pl);
+        WallJumpLogic.updateClingPose(pl);
         DoubleJumpLogic.doDoubleJump(pl);
         SpeedBoostLogic.doSpeedBoost(pl);
         StepAssistLogic.doStepAssist(pl);

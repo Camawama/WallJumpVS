@@ -38,6 +38,8 @@ public class ModConfig extends TXFConfig {
     public static int stopWallSlideDelay = 72000;
     @Entry(category = GENERAL, name = "Max Wall Jumps", min = 0, max = Integer.MAX_VALUE)
     public static int maxWallJumps = 72000;
+    @Entry(category = GENERAL, name = "Wall Cling Pose")
+    public static boolean wallClingPose = true;
     @Entry(category = GENERAL, name = "Play Falling Sound")
     public static boolean playFallingSound = true;
     @Entry(category = GENERAL, name = "Block List", idMode = 1)

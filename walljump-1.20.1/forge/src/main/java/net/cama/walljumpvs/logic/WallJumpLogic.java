@@ -9,6 +9,7 @@ import net.cama.walljumpvs.init.ModEnchantments;
 import net.cama.walljumpvs.init.ServerConfig;
 import net.cama.walljumpvs.network.PacketHandler;
 import net.cama.walljumpvs.network.message.MessageFallDistance;
+import net.cama.walljumpvs.network.message.MessageWallCling;
 import net.cama.walljumpvs.network.message.MessageWallJump;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -17,10 +18,12 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -49,11 +52,21 @@ public class WallJumpLogic {
     // VS classes are only touched through VSCompat, and only when the mod is present.
     private static final boolean VS_LOADED = ModList.get().isLoaded("valkyrienskies");
 
+    /** How often a held cling is repeated to the server, in ticks. */
+    private static final int CLING_SYNC_INTERVAL = 20;
+    /** Height of the gripping hand above the feet, in blocks. */
+    private static final double HAND_HEIGHT = 1.9;
+    /** How far the gripping hand sits to its own side of the body. */
+    private static final double HAND_REACH = 0.3;
+
     public static int ticksWallClinged;
     public static int ticksWallSlid;
     public static boolean stopSlid = false;
     public static int wallJumpCount;
     private static int ticksKeyDown;
+    private static boolean clingSent;
+    private static Direction clingWallSent;
+    private static int ticksSinceClingSent;
     private static double clingX, clingZ;
     private static double lastJumpHeight = Double.MAX_VALUE;
     private static Set<Direction> walls = new HashSet<>();
@@ -208,6 +221,30 @@ public class WallJumpLogic {
         }
 
         pl.setDeltaMovement(0.0, motionY + shipVelocity.y, 0.0);
+    }
+
+    /** True while the player is held to a wall; a forced slide stop is not a cling. */
+    public static boolean isClinging() {
+        return ticksWallClinged > 0 && !stopSlid;
+    }
+
+    /**
+     * Publishes the cling for the pose. The local player is posed straight from
+     * this flag; the server hears about it whenever it flips, so that everyone
+     * tracking the player sees the pose too. The repeat covers a player who
+     * only comes into view partway through someone else's cling.
+     */
+    public static void updateClingPose(LocalPlayer pl) {
+        boolean clinging = isClinging();
+        Direction wall = clinging && !walls.isEmpty() ? getClingDirection() : null;
+        if (pl instanceof WallClingHolder holder) holder.walljumpvs$setWallCling(clinging, wall);
+
+        if (clinging != clingSent || wall != clingWallSent || (clinging && ++ticksSinceClingSent >= CLING_SYNC_INTERVAL)) {
+            clingSent = clinging;
+            clingWallSent = wall;
+            ticksSinceClingSent = 0;
+            PacketHandler.sendToServer(new MessageWallCling(clinging, wall));
+        }
     }
 
     private static boolean canWallJump(LocalPlayer pl) {
@@ -447,10 +484,34 @@ public class WallJumpLogic {
         entity.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch());
     }
 
+    /**
+     * Where the cling scuffs the wall: the wall face beside the gripping hand,
+     * so the scrape comes off the hand the pose has on the wall rather than off
+     * the feet. Falls back to the entity's own position when there is no pose to
+     * match it to — pushing off in a wall jump, or the pose switched off.
+     */
+    private static Vec3 clingContactPos(Entity entity) {
+        if (!ModConfig.wallClingPose || !isClinging() || walls.isEmpty()
+                || !(entity instanceof WallClingHolder holder)) return entity.position();
+
+        // Yaw, the wall direction and the offset are all frame-local under a
+        // gravity frame, so the whole offset is converted in one go at the end.
+        float yaw = entity instanceof LivingEntity living ? living.yBodyRot : entity.getYRot();
+        float rad = yaw * Mth.DEG_TO_RAD;
+        Vec3 right = new Vec3(-Mth.cos(rad), 0.0, -Mth.sin(rad));
+
+        Vec3 offset = right.scale(holder.walljumpvs$wallClingGripRight() ? HAND_REACH : -HAND_REACH)
+                .add(0.0, HAND_HEIGHT, 0.0)
+                .add(Vec3.atLowerCornerOf(getClingDirection().getNormal()).scale(entity.getBbWidth() / 2));
+        if (gravityFrame != null) offset = GravityCompat.toWorld(offset, gravityFrame);
+
+        return entity.position().add(offset);
+    }
+
     private static void spawnWallParticle(Entity entity, BlockPos blockPos) {
         BlockState state = entity.level().getBlockState(blockPos);
         if (state.getRenderShape() != RenderShape.INVISIBLE) {
-            Vec3 pos = entity.position();
+            Vec3 pos = clingContactPos(entity);
             Vec3i motion = getClingDirection().getNormal();
             Vec3 velocity = new Vec3(motion.getX() * -1.0D, -1.0D, motion.getZ() * -1.0D);
             if (gravityFrame != null) velocity = GravityCompat.toWorld(velocity, gravityFrame);
