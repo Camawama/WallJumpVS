@@ -69,6 +69,35 @@ public final class VSCompat {
     }
 
     /**
+     * Records a wall found by a raycast (Valkyrien Skies raycasts through
+     * ships natively, returning shipyard block positions) when the block
+     * belongs to a ship, so the cling anchor can follow that ship.
+     */
+    public static void registerShipWallAt(Level level, Direction direction, BlockPos blockPos) {
+        Ship ship = VSGameUtilsKt.getShipManagingPos(level, blockPos);
+        if (ship != null) {
+            SHIP_WALLS.put(direction, new ShipWall(ship, blockPos.immutable()));
+        }
+    }
+
+    /**
+     * World-space velocity (per tick) of the tracked ship at the player's
+     * position — the clung ship, else the ship of any tracked wall — or zero
+     * when no ship is involved.
+     */
+    public static Vec3 getShipPointVelocity(LocalPlayer pl) {
+        Ship ship = clingShip;
+        if (ship == null) {
+            for (ShipWall wall : SHIP_WALLS.values()) {
+                ship = wall.ship;
+                break;
+            }
+        }
+        if (ship == null) return Vec3.ZERO;
+        return pointVelocityPerTick(ship, VectorConversionsMCKt.toJOML(pl.position()));
+    }
+
+    /**
      * True when any ship block's collision shape overlaps the world-space box.
      */
     public static boolean intersectsShipBlock(Level level, AABB box) {
