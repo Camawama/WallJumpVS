@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -39,6 +40,15 @@ public final class WallClingPose {
     private static final float TRAIL_LEG_Z = 0.05F;
     private static final float BODY_X = 0.06F;
     private static final float BODY_LEAN_Z = 0.10F;
+
+    // Both hands over the top of the wall: the arms are aimed by reach instead
+    // of by a fixed angle, so only the spread and the dangling legs are set here.
+    private static final float LEDGE_ARM_Z = 0.13F;
+    private static final float LEDGE_LEG_X = 0.12F;
+    private static final float LEDGE_LEG_Z = 0.07F;
+    private static final float LEDGE_BODY_X = 0.05F;
+    /** How far the arms may swing round to aim at a wall that is off to one side. */
+    private static final float LEDGE_ARM_YAW_LIMIT = 1.2F;
     /** Idle breathing, so a long cling is not a frozen statue. */
     private static final float SWAY = 0.05F;
 
@@ -77,12 +87,31 @@ public final class WallClingPose {
 
         float sway = Mth.cos(ageInTicks * 0.09F) * SWAY;
 
-        pose(gripArm, weight, GRIP_ARM_X + sway, GRIP_ARM_Z * grip, ARM_Y);
-        pose(freeArm, weight, FREE_ARM_X - sway * 0.5F, FREE_ARM_Z * free, ARM_Y);
-        pose(tuckLeg, weight, TUCK_LEG_X - sway * 0.4F, TUCK_LEG_Z * free, LEG_Y);
-        pose(trailLeg, weight, TRAIL_LEG_X, TRAIL_LEG_Z * grip, LEG_Y);
+        // Near the top of a wall the one-armed cling is dropped for both hands on
+        // the ledge, so the grip stops hanging in the air above a short wall.
+        float partialTick = Minecraft.getInstance().getFrameTime();
+        float ledge = holder.walljumpunbound$wallClingLedgeWeight(partialTick);
+        float ledgeArm = ledgeArmAngle(holder.walljumpunbound$wallClingLedgeRise());
+        float ledgeYaw = ledgeArmYaw(entity, holder.walljumpunbound$wallClingDirection(), partialTick);
 
-        body.xRot = Mth.lerp(weight, body.xRot, BODY_X);
+        pose(gripArm, weight,
+                Mth.lerp(ledge, GRIP_ARM_X + sway, ledgeArm + sway * 0.4F),
+                ledge * ledgeYaw,
+                Mth.lerp(ledge, GRIP_ARM_Z * grip, LEDGE_ARM_Z * grip), ARM_Y);
+        pose(freeArm, weight,
+                Mth.lerp(ledge, FREE_ARM_X - sway * 0.5F, ledgeArm + sway * 0.4F),
+                ledge * ledgeYaw,
+                Mth.lerp(ledge, FREE_ARM_Z * free, LEDGE_ARM_Z * free), ARM_Y);
+        pose(tuckLeg, weight,
+                Mth.lerp(ledge, TUCK_LEG_X - sway * 0.4F, LEDGE_LEG_X + sway * 0.3F),
+                0.0F,
+                Mth.lerp(ledge, TUCK_LEG_Z * free, LEDGE_LEG_Z * free), LEG_Y);
+        pose(trailLeg, weight,
+                Mth.lerp(ledge, TRAIL_LEG_X, LEDGE_LEG_X - sway * 0.3F),
+                0.0F,
+                Mth.lerp(ledge, TRAIL_LEG_Z * grip, LEDGE_LEG_Z * grip), LEG_Y);
+
+        body.xRot = Mth.lerp(weight, body.xRot, Mth.lerp(ledge, BODY_X, LEDGE_BODY_X));
         body.y = Mth.lerp(weight, body.y, 0.0F);
         // The head keeps looking wherever the player looks; only the crouch drop
         // and a little of the torso's lean carry over to it.
@@ -91,15 +120,36 @@ public final class WallClingPose {
         // Vanilla rewrites every limb rotation each frame, so blending off the
         // current value unwinds itself. It never touches these two rolls, so
         // they are scaled straight off the weight and so return to zero alone.
-        body.zRot = -BODY_LEAN_Z * grip * weight;
-        head.zRot = -BODY_LEAN_Z * 0.5F * grip * weight;
+        // Two hands on a ledge is a square-on hold, so the lean goes with it.
+        float lean = (1.0F - ledge) * weight;
+        body.zRot = -BODY_LEAN_Z * grip * lean;
+        head.zRot = -BODY_LEAN_Z * 0.5F * grip * lean;
 
         return weight;
     }
 
-    private static void pose(ModelPart part, float weight, float xRot, float zRot, float y) {
+    /**
+     * The arm angle that puts the hands on a ledge this far above the feet. The
+     * arm swings about the shoulder, so its rise is a single cosine and the
+     * angle falls straight out of it: level with the shoulder points the arms
+     * out in front, a full arm above it puts them straight overhead.
+     */
+    private static float ledgeArmAngle(float ledgeRise) {
+        double rise = (ledgeRise - WallJumpLogic.SHOULDER_HEIGHT) / WallJumpLogic.ARM_LENGTH;
+        return -(float) Math.acos(Mth.clamp(-rise, -1.0, 1.0));
+    }
+
+    /** Swings the reach round towards a ledge that is off to one side. */
+    private static float ledgeArmYaw(LivingEntity entity, Direction wall, float partialTick) {
+        if (wall == null) return 0.0F;
+        float bodyYaw = Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        float bearing = Mth.wrapDegrees(wall.toYRot() - bodyYaw) * Mth.DEG_TO_RAD;
+        return Mth.clamp(bearing, -LEDGE_ARM_YAW_LIMIT, LEDGE_ARM_YAW_LIMIT);
+    }
+
+    private static void pose(ModelPart part, float weight, float xRot, float yRot, float zRot, float y) {
         part.xRot = Mth.lerp(weight, part.xRot, xRot);
-        part.yRot = Mth.lerp(weight, part.yRot, 0.0F);
+        part.yRot = Mth.lerp(weight, part.yRot, yRot);
         part.zRot = Mth.lerp(weight, part.zRot, zRot);
         part.y = Mth.lerp(weight, part.y, y);
         part.z = Mth.lerp(weight, part.z, 0.0F);

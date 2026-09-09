@@ -22,4 +22,10 @@ public interface WallClingHolder {
 
     /** 0 while the vanilla pose is showing, 1 once the cling pose is fully in. */
     float walljumpunbound$wallClingWeight(float partialTick);
+
+    /** How far above the feet the ledge sits; only meaningful once the ledge weight is up. */
+    float walljumpunbound$wallClingLedgeRise();
+
+    /** 0 on an open wall face, 1 once both hands are over the top of it. */
+    float walljumpunbound$wallClingLedgeWeight(float partialTick);
 }

@@ -43,6 +43,7 @@ public record MessageServerConfig(byte[] config) {
         ServerConfig.enableDoubleJump = buffer.readBoolean();
         ServerConfig.enableSpeedBoost = buffer.readBoolean();
         ServerConfig.speedBoostMultiplier = buffer.readDouble();
+        ServerConfig.ledgeGrab = buffer.readBoolean();
     }
 
     private static List<String> readList(FriendlyByteBuf buffer) {

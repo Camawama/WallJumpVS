@@ -44,6 +44,7 @@ public abstract class PlayerListMixin {
         buffer.writeBoolean(ModConfig.enableDoubleJump);
         buffer.writeBoolean(ModConfig.enableSpeedBoost);
         buffer.writeDouble(ModConfig.speedBoostMultiplier);
+        buffer.writeBoolean(ModConfig.ledgeGrab);
 
         ServerPlayNetworking.send(player, MessageServerConfig.ID, buffer);
     }

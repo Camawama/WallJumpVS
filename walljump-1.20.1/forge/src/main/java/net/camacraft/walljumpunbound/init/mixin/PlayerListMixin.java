@@ -44,6 +44,7 @@ public abstract class PlayerListMixin {
         buffer.writeBoolean(ModConfig.enableDoubleJump);
         buffer.writeBoolean(ModConfig.enableSpeedBoost);
         buffer.writeDouble(ModConfig.speedBoostMultiplier);
+        buffer.writeBoolean(ModConfig.ledgeGrab);
 
         // Send only the written bytes, not the buffer's whole backing array.
         byte[] data = new byte[buffer.writerIndex()];

@@ -58,6 +58,18 @@ public class WallJumpLogic {
     private static final double HAND_HEIGHT = 1.9;
     /** How far the gripping hand sits to its own side of the body. */
     private static final double HAND_REACH = 0.3;
+    /** Shoulder height above the feet, and the arm's length: the reach envelope. */
+    public static final double SHOULDER_HEIGHT = 1.375;
+    public static final double ARM_LENGTH = 0.75;
+    /** A ledge is grabbable while it sits within one arm of the shoulder. */
+    public static final double LEDGE_RISE_MIN = SHOULDER_HEIGHT - ARM_LENGTH;
+    public static final double LEDGE_RISE_MAX = SHOULDER_HEIGHT + ARM_LENGTH;
+    /** How far past the wall face the ledge probe sits, so it is inside the wall. */
+    private static final double LEDGE_PROBE_OUT = 0.15;
+    /** Side of the cube used to ask whether the wall is still there at a height. */
+    private static final double LEDGE_PROBE_SIZE = 0.15;
+    /** Bisection steps; six over the reach envelope lands inside a quarter pixel. */
+    private static final int LEDGE_PROBE_STEPS = 6;
 
     public static int ticksWallClinged;
     public static int ticksWallSlid;
@@ -207,6 +219,10 @@ public class WallJumpLogic {
         } else if (motionY < -0.6) {
             motionY = motionY + 0.2;
             spawnWallParticle(pl, getWallPos(pl));
+        } else if (ServerConfig.ledgeGrab && !walls.isEmpty() && !Double.isNaN(ledgeRise(pl, getClingDirection()))) {
+            // Hands over the top of the wall: a grip on the ledge does not slip,
+            // so neither the slide nor the give-up timer below ever starts.
+            motionY = 0.0;
         } else if (ticksWallClinged++ > ServerConfig.wallSlideDelay) {
             if (ticksWallSlid++ > ServerConfig.stopWallSlideDelay) stopSlid = true;
             motionY = -0.1;
@@ -282,6 +298,46 @@ public class WallJumpLogic {
 
     private static double bodyScale(LocalPlayer pl) {
         return Math.max(0.05, Math.min(1.0, pl.getBbHeight() / 1.8));
+    }
+
+    /**
+     * How far above the feet the wall being clung to ends, or NaN when it has no
+     * top within arm's reach — either it carries on past the hands, or there is
+     * nothing up there to hold.
+     *
+     * This asks "is the wall still solid at this height" the same way the rest of
+     * the mod does — a small box tested against the world and, separately, against
+     * ship collision shapes — because that is what sees a Valkyrien Skies hull at
+     * any rotation. The top is then bisected between a solid height and a clear
+     * one, which needs the wall to actually stop inside the envelope: a wall that
+     * is still solid at full reach has no grabbable top and returns NaN.
+     */
+    public static double ledgeRise(LivingEntity entity, Direction wall) {
+        Quaternionf frame = GravityCompat.isActive(entity) ? GravityCompat.frame(entity) : null;
+        Vec3 up = frame != null ? GravityCompat.up(frame) : new Vec3(0.0, 1.0, 0.0);
+        Vec3 into = Vec3.atLowerCornerOf(wall.getNormal());
+        if (frame != null) into = GravityCompat.toWorld(into, frame);
+        Vec3 column = entity.position().add(into.scale(entity.getBbWidth() / 2 + LEDGE_PROBE_OUT));
+
+        if (wallAt(entity, column, up, LEDGE_RISE_MAX)) return Double.NaN;
+        if (!wallAt(entity, column, up, LEDGE_RISE_MIN)) return Double.NaN;
+
+        double solid = LEDGE_RISE_MIN, clear = LEDGE_RISE_MAX;
+        for (int i = 0; i < LEDGE_PROBE_STEPS; i++) {
+            double mid = (solid + clear) / 2;
+            if (wallAt(entity, column, up, mid)) solid = mid;
+            else clear = mid;
+        }
+        // The probe clears the wall once its underside passes the top, so the top
+        // itself is half a probe lower than the lowest clear height found.
+        return clear - LEDGE_PROBE_SIZE / 2;
+    }
+
+    /** Whether the clung wall is still solid this far above the feet. */
+    private static boolean wallAt(LivingEntity entity, Vec3 column, Vec3 up, double rise) {
+        AABB probe = AABB.ofSize(column.add(up.scale(rise)), LEDGE_PROBE_SIZE, LEDGE_PROBE_SIZE, LEDGE_PROBE_SIZE);
+        if (collidesWithBlock(entity.level(), probe)) return true;
+        return vsEnabled() && VSCompat.intersectsShipBlock(entity.level(), probe);
     }
 
     private static boolean groundBelow(LocalPlayer pl, double depth) {

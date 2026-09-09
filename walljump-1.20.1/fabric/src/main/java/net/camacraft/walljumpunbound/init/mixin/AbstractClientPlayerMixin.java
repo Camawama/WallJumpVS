@@ -1,7 +1,9 @@
 package net.camacraft.walljumpunbound.init.mixin;
 
+import net.camacraft.walljumpunbound.init.ModConfig;
 import net.camacraft.walljumpunbound.logic.WallClingHolder;
 import net.camacraft.walljumpunbound.logic.WallClingPose;
+import net.camacraft.walljumpunbound.logic.WallJumpLogic;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -25,6 +27,12 @@ public abstract class AbstractClientPlayerMixin implements WallClingHolder {
     private float walljumpunbound$clingWeight;
     @Unique
     private float walljumpunbound$clingWeightO;
+    @Unique
+    private float walljumpunbound$ledgeRise;
+    @Unique
+    private float walljumpunbound$ledgeWeight;
+    @Unique
+    private float walljumpunbound$ledgeWeightO;
 
     /**
      * The pose eases here rather than in the model so it moves at a fixed rate
@@ -40,6 +48,7 @@ public abstract class AbstractClientPlayerMixin implements WallClingHolder {
         if (this.walljumpunbound$clinging && self.onGround() && !self.isLocalPlayer()) this.walljumpunbound$clinging = false;
 
         this.walljumpunbound$resolveGripArm(self);
+        this.walljumpunbound$resolveLedge(self);
 
         this.walljumpunbound$clingWeightO = this.walljumpunbound$clingWeight;
         float target = this.walljumpunbound$clinging ? 1.0F : 0.0F;
@@ -71,6 +80,38 @@ public abstract class AbstractClientPlayerMixin implements WallClingHolder {
         } else if (lateral < -WallClingPose.GRIP_SWITCH) {
             this.walljumpunbound$gripRight = false;
         }
+    }
+
+    /**
+     * Looks for the top of the wall within reach, so the pose can put both hands
+     * on a ledge rather than leave one grasping at the air above a short wall.
+     * Only clinging players are probed, and only when the pose is switched on.
+     */
+    @Unique
+    private void walljumpunbound$resolveLedge(AbstractClientPlayer self) {
+        this.walljumpunbound$ledgeWeightO = this.walljumpunbound$ledgeWeight;
+
+        Direction wall = this.walljumpunbound$clingWall;
+        double rise = this.walljumpunbound$clinging && wall != null && ModConfig.wallClingPose
+                ? WallJumpLogic.ledgeRise(self, wall)
+                : Double.NaN;
+        boolean onLedge = !Double.isNaN(rise);
+        // Held past the release so the hands stay put while the pose eases out.
+        if (onLedge) this.walljumpunbound$ledgeRise = (float) rise;
+
+        float target = onLedge ? 1.0F : 0.0F;
+        this.walljumpunbound$ledgeWeight += (target - this.walljumpunbound$ledgeWeight) * WallClingPose.BLEND_SPEED;
+        if (Math.abs(target - this.walljumpunbound$ledgeWeight) < 0.01F) this.walljumpunbound$ledgeWeight = target;
+    }
+
+    @Override
+    public float walljumpunbound$wallClingLedgeRise() {
+        return this.walljumpunbound$ledgeRise;
+    }
+
+    @Override
+    public float walljumpunbound$wallClingLedgeWeight(float partialTick) {
+        return Mth.lerp(partialTick, this.walljumpunbound$ledgeWeightO, this.walljumpunbound$ledgeWeight);
     }
 
     @Override

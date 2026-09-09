@@ -31,6 +31,7 @@ public class ServerConfig {
     public static boolean enableDoubleJump = ModConfig.enableDoubleJump;
     public static boolean enableSpeedBoost = ModConfig.enableSpeedBoost;
     public static double speedBoostMultiplier = ModConfig.speedBoostMultiplier;
+    public static boolean ledgeGrab = ModConfig.ledgeGrab;
 
     public static void reset() {
         for (Field field : ServerConfig.class.getDeclaredFields()) {
