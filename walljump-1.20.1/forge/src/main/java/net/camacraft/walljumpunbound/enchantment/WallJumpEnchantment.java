@@ -34,11 +34,11 @@ public class WallJumpEnchantment extends Enchantment {
     // so existing enchanted items survive config changes.
     @Override
     public boolean isDiscoverable() {
-        return ServerConfig.enableEnchantments && ServerConfig.enableWallJump;
+        return ServerConfig.enableEnchantments && ServerConfig.wallJumpEnchantment;
     }
 
     @Override
     public boolean isTradeable() {
-        return ServerConfig.enableEnchantments && ServerConfig.enableWallJump;
+        return ServerConfig.enableEnchantments && ServerConfig.wallJumpEnchantment;
     }
 }

@@ -33,7 +33,7 @@ public record MessageFallDistance(float fallDistance) {
 
     // Only wall jump and double jump send this packet; ignore it when neither is available.
     private static boolean anySenderFeatureEnabled() {
-        if (ModConfig.useWallJump || ModConfig.useDoubleJump) return true;
-        return ModConfig.enableEnchantments && (ModConfig.enableWallJump || ModConfig.enableDoubleJump);
+        if (ModConfig.wallJumpEnabled || ModConfig.doubleJumpEnabled) return true;
+        return ModConfig.enableEnchantments && (ModConfig.wallJumpEnchantment || ModConfig.doubleJumpEnchantment);
     }
 }

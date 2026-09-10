@@ -22,6 +22,10 @@ public abstract class AbstractClientPlayerMixin implements WallClingHolder {
     @Unique
     private Direction walljumpunbound$clingWall;
     @Unique
+    private float walljumpunbound$clingYaw;
+    @Unique
+    private boolean walljumpunbound$clingShip;
+    @Unique
     private boolean walljumpunbound$gripRight = true;
     @Unique
     private float walljumpunbound$clingWeight;
@@ -59,16 +63,17 @@ public abstract class AbstractClientPlayerMixin implements WallClingHolder {
     /**
      * Picks the arm that reaches for the wall: the near one. The model faces
      * yBodyRot, so the wall's side is judged against that and not the look
-     * direction. Once a grip is taken it only swaps when the wall is clearly
-     * round the other side, so a wall held head-on cannot flutter between arms.
+     * direction, and against the wall's true bearing, so a ship hull turned
+     * off the world axes is judged where it really is. Once a grip is taken it
+     * only swaps when the wall is clearly round the other side, so a wall held
+     * head-on cannot flutter between arms.
      */
     @Unique
     private void walljumpunbound$resolveGripArm(AbstractClientPlayer self) {
-        Direction wall = this.walljumpunbound$clingWall;
-        if (!this.walljumpunbound$clinging || wall == null) return;
+        if (!this.walljumpunbound$clinging || this.walljumpunbound$clingWall == null) return;
 
         // +1 is straight off the right shoulder, -1 the left, 0 dead ahead or behind.
-        float lateral = Mth.sin(Mth.wrapDegrees(wall.toYRot() - self.yBodyRot) * Mth.DEG_TO_RAD);
+        float lateral = Mth.sin(Mth.wrapDegrees(this.walljumpunbound$clingYaw - self.yBodyRot) * Mth.DEG_TO_RAD);
 
         if (this.walljumpunbound$clingWeight <= 0.0F) {
             // A fresh grip: the near arm, or the main hand for a head-on wall.
@@ -91,9 +96,8 @@ public abstract class AbstractClientPlayerMixin implements WallClingHolder {
     private void walljumpunbound$resolveLedge(AbstractClientPlayer self) {
         this.walljumpunbound$ledgeWeightO = this.walljumpunbound$ledgeWeight;
 
-        Direction wall = this.walljumpunbound$clingWall;
-        double rise = this.walljumpunbound$clinging && wall != null && ModConfig.wallClingPose
-                ? WallJumpLogic.ledgeRise(self, wall)
+        double rise = this.walljumpunbound$clinging && this.walljumpunbound$clingWall != null && ModConfig.wallClingPose
+                ? WallJumpLogic.ledgeRise(self, this.walljumpunbound$clingYaw, this.walljumpunbound$clingShip)
                 : Double.NaN;
         boolean onLedge = !Double.isNaN(rise);
         // Held past the release so the hands stay put while the pose eases out.
@@ -125,9 +129,25 @@ public abstract class AbstractClientPlayerMixin implements WallClingHolder {
     }
 
     @Override
-    public void walljumpunbound$setWallCling(boolean clinging, Direction wall) {
+    public float walljumpunbound$wallClingYaw() {
+        return this.walljumpunbound$clingYaw;
+    }
+
+    @Override
+    public boolean walljumpunbound$wallClingOnShip() {
+        return this.walljumpunbound$clingShip;
+    }
+
+    @Override
+    public void walljumpunbound$setWallCling(boolean clinging, Direction wall, float yaw, boolean ship) {
         this.walljumpunbound$clinging = clinging;
         this.walljumpunbound$clingWall = wall;
+        // The yaw and ship flag are left as they were on release, so the pose
+        // keeps reaching the same way while it eases out.
+        if (wall != null) {
+            this.walljumpunbound$clingYaw = yaw;
+            this.walljumpunbound$clingShip = ship;
+        }
     }
 
     @Override

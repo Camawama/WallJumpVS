@@ -20,7 +20,7 @@ import java.util.Map;
 @OnlyIn(Dist.CLIENT)
 public class SpeedBoostLogic {
     public static void doSpeedBoost(LocalPlayer pl) {
-        if ((!ServerConfig.enableEnchantments || !ServerConfig.enableSpeedBoost) && (ServerConfig.sprintSpeedBoost == 0 && ServerConfig.elytraSpeedBoost == 0))
+        if ((!ServerConfig.enableEnchantments || !ServerConfig.speedBoostEnchantment) && (ServerConfig.sprintSpeedBoost == 0 && ServerConfig.elytraSpeedBoost == 0))
             return;
         int jumpBoostLevel = 0;
         MobEffectInstance jumpBoostEffect = pl.getEffect(MobEffects.JUMP);
@@ -53,7 +53,7 @@ public class SpeedBoostLogic {
     }
 
     private static int getEquipmentBoost(LocalPlayer pl, EquipmentSlot slot) {
-        if (!ServerConfig.enableEnchantments || !ServerConfig.enableSpeedBoost)
+        if (!ServerConfig.enableEnchantments || !ServerConfig.speedBoostEnchantment)
             return 0;
         ItemStack stack = pl.getItemBySlot(slot);
         if (!stack.isEmpty()) {

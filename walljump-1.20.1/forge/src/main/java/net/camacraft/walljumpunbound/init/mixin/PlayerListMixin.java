@@ -31,8 +31,8 @@ public abstract class PlayerListMixin {
         buffer.writeDouble(ModConfig.elytraSpeedBoost);
         buffer.writeDouble(ModConfig.sprintSpeedBoost);
         buffer.writeBoolean(ModConfig.stepAssist);
-        buffer.writeBoolean(ModConfig.useDoubleJump);
-        buffer.writeBoolean(ModConfig.useWallJump);
+        buffer.writeBoolean(ModConfig.doubleJumpEnabled);
+        buffer.writeBoolean(ModConfig.wallJumpEnabled);
         buffer.writeDouble(ModConfig.wallJumpHeight);
         buffer.writeInt(ModConfig.wallSlideDelay);
         buffer.writeInt(ModConfig.stopWallSlideDelay);
@@ -40,9 +40,9 @@ public abstract class PlayerListMixin {
         writeList(buffer, ModConfig.blockList);
         buffer.writeEnum(ModConfig.blockListMode);
         buffer.writeBoolean(ModConfig.enableEnchantments);
-        buffer.writeBoolean(ModConfig.enableWallJump);
-        buffer.writeBoolean(ModConfig.enableDoubleJump);
-        buffer.writeBoolean(ModConfig.enableSpeedBoost);
+        buffer.writeBoolean(ModConfig.wallJumpEnchantment);
+        buffer.writeBoolean(ModConfig.doubleJumpEnchantment);
+        buffer.writeBoolean(ModConfig.speedBoostEnchantment);
         buffer.writeDouble(ModConfig.speedBoostMultiplier);
         buffer.writeBoolean(ModConfig.ledgeGrab);
 

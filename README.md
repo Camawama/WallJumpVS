@@ -18,6 +18,12 @@ WallJump Unbound is a fork of [Wall-Jump TXF](https://github.com/jahirxtrap/wall
 
 <strong>Valkyrien Skies support:</strong> All of the above works on VS ship walls — including moving and rotating ships
 
+<strong>Wall slide sounds and cling fall damage:</strong> sliding scrapes the block you are on, and catching a wall after a long fall costs a share of the fall damage (configurable)
+
+<strong>Block list:</strong> blacklist or whitelist blocks by id, <code>#tag</code>, <code>*wildcard</code> or <code>/regex/</code>
+
+Every option is documented in <a href="CONFIG.md">CONFIG.md</a>.
+
 <strong>Dependencies:</strong>
 
 - <a href="https://modrinth.com/mod/valkyrien-skies" target="_blank">Valkyrien Skies</a> <strong>(Optional)</strong> — required only for ship wall jumping; the mod works fine without it

@@ -7,6 +7,12 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.List;
 
+/**
+ * The server's copy of every rule-setting option, received on join (see
+ * {@code PlayerListMixin} and {@code MessageServerConfig}) and reset to the
+ * local config on disconnect. Field names match {@link ModConfig} exactly:
+ * {@link #reset(String)} copies by name.
+ */
 public class ServerConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger("walljumpunbound");
 
@@ -18,8 +24,8 @@ public class ServerConfig {
     public static double elytraSpeedBoost = ModConfig.elytraSpeedBoost;
     public static double sprintSpeedBoost = ModConfig.sprintSpeedBoost;
     public static boolean stepAssist = ModConfig.stepAssist;
-    public static boolean useDoubleJump = ModConfig.useDoubleJump;
-    public static boolean useWallJump = ModConfig.useWallJump;
+    public static boolean doubleJumpEnabled = ModConfig.doubleJumpEnabled;
+    public static boolean wallJumpEnabled = ModConfig.wallJumpEnabled;
     public static double wallJumpHeight = ModConfig.wallJumpHeight;
     public static int wallSlideDelay = ModConfig.wallSlideDelay;
     public static int stopWallSlideDelay = ModConfig.stopWallSlideDelay;
@@ -27,9 +33,9 @@ public class ServerConfig {
     public static List<String> blockList = ModConfig.blockList;
     public static BlockListMode blockListMode = ModConfig.blockListMode;
     public static boolean enableEnchantments = ModConfig.enableEnchantments;
-    public static boolean enableWallJump = ModConfig.enableWallJump;
-    public static boolean enableDoubleJump = ModConfig.enableDoubleJump;
-    public static boolean enableSpeedBoost = ModConfig.enableSpeedBoost;
+    public static boolean wallJumpEnchantment = ModConfig.wallJumpEnchantment;
+    public static boolean doubleJumpEnchantment = ModConfig.doubleJumpEnchantment;
+    public static boolean speedBoostEnchantment = ModConfig.speedBoostEnchantment;
     public static double speedBoostMultiplier = ModConfig.speedBoostMultiplier;
     public static boolean ledgeGrab = ModConfig.ledgeGrab;
 

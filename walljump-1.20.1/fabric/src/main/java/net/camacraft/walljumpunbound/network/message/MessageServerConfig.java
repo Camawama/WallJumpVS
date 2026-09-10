@@ -25,8 +25,8 @@ public class MessageServerConfig {
         ServerConfig.elytraSpeedBoost = buffer.readDouble();
         ServerConfig.sprintSpeedBoost = buffer.readDouble();
         ServerConfig.stepAssist = buffer.readBoolean();
-        ServerConfig.useDoubleJump = buffer.readBoolean();
-        ServerConfig.useWallJump = buffer.readBoolean();
+        ServerConfig.doubleJumpEnabled = buffer.readBoolean();
+        ServerConfig.wallJumpEnabled = buffer.readBoolean();
         ServerConfig.wallJumpHeight = buffer.readDouble();
         ServerConfig.wallSlideDelay = buffer.readInt();
         ServerConfig.stopWallSlideDelay = buffer.readInt();
@@ -34,9 +34,9 @@ public class MessageServerConfig {
         ServerConfig.blockList = readList(buffer);
         ServerConfig.blockListMode = buffer.readEnum(BlockListMode.class);
         ServerConfig.enableEnchantments = buffer.readBoolean();
-        ServerConfig.enableWallJump = buffer.readBoolean();
-        ServerConfig.enableDoubleJump = buffer.readBoolean();
-        ServerConfig.enableSpeedBoost = buffer.readBoolean();
+        ServerConfig.wallJumpEnchantment = buffer.readBoolean();
+        ServerConfig.doubleJumpEnchantment = buffer.readBoolean();
+        ServerConfig.speedBoostEnchantment = buffer.readBoolean();
         ServerConfig.speedBoostMultiplier = buffer.readDouble();
         ServerConfig.ledgeGrab = buffer.readBoolean();
     }

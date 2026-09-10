@@ -15,7 +15,17 @@ public interface WallClingHolder {
     /** Horizontal direction from the player to the wall, null when not clinging. */
     Direction walljumpunbound$wallClingDirection();
 
-    void walljumpunbound$setWallCling(boolean clinging, Direction wall);
+    /**
+     * Yaw of the way to the wall, in degrees: the heading a player square to
+     * it would have. The cardinal's own yaw on a world wall; on a ship it is
+     * the hull's true bearing, which is rarely a cardinal.
+     */
+    float walljumpunbound$wallClingYaw();
+
+    /** Whether the wall belongs to a Valkyrien Skies ship. */
+    boolean walljumpunbound$wallClingOnShip();
+
+    void walljumpunbound$setWallCling(boolean clinging, Direction wall, float yaw, boolean ship);
 
     /** Which arm has the wall, resolved each tick from the side the wall is on. */
     boolean walljumpunbound$wallClingGripRight();

@@ -15,7 +15,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import static net.camacraft.walljumpunbound.WallJumpMod.MODID;
 
 public final class PacketHandler {
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
     private static int nextId = 0;
     public static final SimpleChannel INSTANCE = NetworkRegistry.ChannelBuilder
             .named(new ResourceLocation(MODID, "network"))

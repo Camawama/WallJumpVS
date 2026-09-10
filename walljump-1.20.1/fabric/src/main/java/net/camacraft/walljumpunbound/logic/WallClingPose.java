@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -49,6 +48,12 @@ public final class WallClingPose {
     private static final float LEDGE_BODY_X = 0.05F;
     /** How far the arms may swing round to aim at a wall that is off to one side. */
     private static final float LEDGE_ARM_YAW_LIMIT = 1.2F;
+    /**
+     * How far in front of the shoulder a hand has to get to be on top of a
+     * ledge: past the wall face, which is half the body's width out, and on by
+     * most of the hand itself, so it rests on the ledge rather than against it.
+     */
+    private static final double LEDGE_HAND_FORWARD = 0.42;
     /** Idle breathing, so a long cling is not a frozen statue. */
     private static final float SWAY = 0.05F;
 
@@ -92,7 +97,9 @@ public final class WallClingPose {
         float partialTick = Minecraft.getInstance().getFrameTime();
         float ledge = holder.walljumpunbound$wallClingLedgeWeight(partialTick);
         float ledgeArm = ledgeArmAngle(holder.walljumpunbound$wallClingLedgeRise());
-        float ledgeYaw = ledgeArmYaw(entity, holder.walljumpunbound$wallClingDirection(), partialTick);
+        float ledgeYaw = holder.walljumpunbound$isWallClinging() || ledge > 0.0F
+                ? ledgeArmYaw(entity, holder.walljumpunbound$wallClingYaw(), partialTick)
+                : 0.0F;
 
         pose(gripArm, weight,
                 Mth.lerp(ledge, GRIP_ARM_X + sway, ledgeArm + sway * 0.4F),
@@ -129,21 +136,35 @@ public final class WallClingPose {
     }
 
     /**
-     * The arm angle that puts the hands on a ledge this far above the feet. The
-     * arm swings about the shoulder, so its rise is a single cosine and the
-     * angle falls straight out of it: level with the shoulder points the arms
-     * out in front, a full arm above it puts them straight overhead.
+     * The arm angle that puts the hands on a ledge this far above the feet.
+     * The arm swings about the shoulder, so one angle fixes where the hand
+     * goes: a ledge level with the shoulder has the arms straight out, one at
+     * full reach overhead has them all but straight up. The hands must also
+     * get out past the wall face to be on the ledge at all, so the arm is
+     * never let hang nearer vertical than that reach allows: a low ledge, met
+     * from a grab that landed high, is held with the arms angled down and
+     * forward onto it rather than dangling in the air beside it.
      */
     private static float ledgeArmAngle(float ledgeRise) {
-        double rise = (ledgeRise - WallJumpLogic.SHOULDER_HEIGHT) / WallJumpLogic.ARM_LENGTH;
-        return -(float) Math.acos(Mth.clamp(-rise, -1.0, 1.0));
+        // The ledge relative to the shoulder: above (+) or below (-) it.
+        double rise = ledgeRise - WallJumpLogic.SHOULDER_HEIGHT;
+        double arm = WallJumpLogic.ARM_LENGTH;
+        // How far forward a straight arm's hand sits when it is exactly level with the ledge...
+        double level = arm * arm - rise * rise;
+        double forward = level > 0.0 ? Math.sqrt(level) : 0.0;
+        // ...unless that leaves it short of the ledge, in which case aim the arm at the ledge instead.
+        if (forward < LEDGE_HAND_FORWARD) forward = LEDGE_HAND_FORWARD;
+        return -(float) Math.atan2(forward, -rise);
     }
 
-    /** Swings the reach round towards a ledge that is off to one side. */
-    private static float ledgeArmYaw(LivingEntity entity, Direction wall, float partialTick) {
-        if (wall == null) return 0.0F;
+    /**
+     * Swings the reach round towards a ledge that is off to one side. The wall
+     * is given by its true bearing, so a ship hull turned off the world axes
+     * is reached for where it actually is and not at the nearest cardinal.
+     */
+    private static float ledgeArmYaw(LivingEntity entity, float wallYaw, float partialTick) {
         float bodyYaw = Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
-        float bearing = Mth.wrapDegrees(wall.toYRot() - bodyYaw) * Mth.DEG_TO_RAD;
+        float bearing = Mth.wrapDegrees(wallYaw - bodyYaw) * Mth.DEG_TO_RAD;
         return Mth.clamp(bearing, -LEDGE_ARM_YAW_LIMIT, LEDGE_ARM_YAW_LIMIT);
     }
 

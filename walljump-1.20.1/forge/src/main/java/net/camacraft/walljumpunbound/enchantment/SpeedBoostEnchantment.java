@@ -41,11 +41,11 @@ public class SpeedBoostEnchantment extends Enchantment {
     // so existing enchanted items survive config changes.
     @Override
     public boolean isDiscoverable() {
-        return ServerConfig.enableEnchantments && ServerConfig.enableSpeedBoost;
+        return ServerConfig.enableEnchantments && ServerConfig.speedBoostEnchantment;
     }
 
     @Override
     public boolean isTradeable() {
-        return ServerConfig.enableEnchantments && ServerConfig.enableSpeedBoost;
+        return ServerConfig.enableEnchantments && ServerConfig.speedBoostEnchantment;
     }
 }

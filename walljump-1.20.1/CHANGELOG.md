@@ -2,6 +2,35 @@
 
 ## 1.20.1-1.2.0 (unreleased) — rotated-ship wall jumping
 
+### 2026-09-10 pass: ship edge cases, ledge pose, config, block list, sounds, cling damage
+
+#### Valkyrien Skies
+
+- **Ship walls are found by the face touched, not by which probe found them.** The four directional probes each contained the player's whole box, so a hull the box was pressed into answered to all four at once and the cling direction (and the ledge pose's arm aim) was whichever came out of a `HashSet` first. One probe now collects every ship block the box touches, classifies each by the face it meets (the least-penetrated axis, turned into world space), throws out floors and ceilings, and keeps the deepest wall. The cardinal direction and the pose's bearing are derived from that face's real normal.
+- **The "ground below" check no longer mistakes a leaning hull for a floor.** It used to shift the whole body box down 0.8 and ask whether any ship block overlapped it, so a hull face tilted a few degrees (which leans *out* below the feet) refused every cling on that face. Ground is now found by rays down from the footprint, and only a face within 60° of level counts. Most likely cause of "the bottom of a tipped pillar can't be clung to".
+- **Sliding down a ship wall now ends on the ground.** A ship cling is a position hold, which never triggers `onGround`; the slide now looks for a floor within its descent and steps off onto it, handing the ship's motion back so a moving deck carries the player on.
+- **The hold is pushed back out of the hull** along the contact normal each tick, so a tilted or rolling hull no longer swallows the player as they slide.
+- The ledge probe reaches further into a ship hull (0.35 instead of 0.15 blocks), since a tilted hull leans away from a probe aimed at the cardinal.
+- The pose's ledge-arm aim and grip-arm choice use the hull's true bearing; other players receive it (and whether the wall is a ship) in the cling sync packet. Forge network protocol bumped to 2.
+- `debugShipCling` now logs *why* a cling was refused on the key press, and what the hull probe touched (block, face, depth).
+
+#### Wall cling
+
+- **Ledge arms reach forward onto a low ledge.** When a grab landed high, the ledge sat below the shoulders and the "cosine" arm model swung the arms straight down beside the body, holding air. The arms now always reach out past the wall face to where the ledge is, so a low ledge is held with the arms angled down and forward onto it.
+- In an inside corner the cling keeps the wall it started on rather than swapping grips, and out of a cling the wall most squarely in front is preferred. Wall sets are `EnumSet`s now, so nothing depends on hash order.
+- **Wall slide sound.** Sliding scrapes the wall's own block hit sound every 0.35 blocks of descent, quietly and with a little pitch variation (`playSlideSound`, client, default on).
+- **Cling fall damage.** Catching a wall after a fall of `clingFallDamageMinDistance` blocks or more (default 6) deals `clingFallDamageFraction` (default 0.35) of the damage the ground would have done, as a new `walljumpunbound:wall_cling` damage type that bypasses armour and is reduced by Feather Falling like real fall damage. Computed on the server from its own fall record, on the first cling packet. `clingFallDamage` (server, default on).
+
+#### Config
+
+- Renamed the confusing pairs: `useWallJump` → `wallJumpEnabled`, `useDoubleJump` → `doubleJumpEnabled`, `enableWallJump` → `wallJumpEnchantment`, `enableDoubleJump` → `doubleJumpEnchantment`, `enableSpeedBoost` → `speedBoostEnchantment`. Old keys in an existing JSON are ignored (defaults apply).
+- Options are grouped into Wall Jump / Other Movement / Block List / Valkyrien Skies / Enchantments tabs, every option has a tooltip (with a server/client note), and `CONFIG.md` at the repo root documents them all.
+- **Defaults:** `enableEnchantments` is now off (double jump was already off).
+
+#### Block list
+
+- Entries can be block ids, `#block/tags`, `*wild?cards*` or `/regular expressions/`; see `CONFIG.md`. Invalid entries are logged and skipped.
+
 ### Valkyrien Skies
 
 - **Wall cling and wall jump now work on rotated ships.** Wall detection used four thin probes centered on the player, reaching ~0.36 blocks out along the cardinal axes; a rotated ship stops the player at a *corner* of their bounding box (~0.42–0.6 blocks from center), so the probes never reached the wall. Ship walls are now probed with the player's whole bounding box — which already touches the hull at any rotation — expanded slightly in each direction. World-grid walls keep the vanilla probes.

@@ -42,11 +42,11 @@ public class DoubleJumpEnchantment extends Enchantment {
     // so existing enchanted items survive config changes.
     @Override
     public boolean isDiscoverable() {
-        return ServerConfig.enableEnchantments && ServerConfig.enableDoubleJump;
+        return ServerConfig.enableEnchantments && ServerConfig.doubleJumpEnchantment;
     }
 
     @Override
     public boolean isTradeable() {
-        return ServerConfig.enableEnchantments && ServerConfig.enableDoubleJump;
+        return ServerConfig.enableEnchantments && ServerConfig.doubleJumpEnchantment;
     }
 }

@@ -21,7 +21,7 @@ public record MessageWallJump(boolean didWallJump) {
     public static void handle(MessageWallJump message, Supplier<NetworkEvent.Context> supplier) {
         supplier.get().enqueueWork(() -> {
             ServerPlayer player = supplier.get().getSender();
-            boolean wallJumpEnabled = ModConfig.useWallJump || (ModConfig.enableEnchantments && ModConfig.enableWallJump);
+            boolean wallJumpEnabled = ModConfig.wallJumpEnabled || (ModConfig.enableEnchantments && ModConfig.wallJumpEnchantment);
             if (player != null && message.didWallJump && wallJumpEnabled) {
                 player.resetFallDistance();
                 player.causeFoodExhaustion((float) ServerConfig.exhaustionWallJump);

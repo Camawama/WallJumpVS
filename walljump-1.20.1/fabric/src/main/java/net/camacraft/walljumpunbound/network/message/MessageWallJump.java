@@ -17,7 +17,7 @@ public class MessageWallJump {
     public static void handle(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buffer, PacketSender sender) {
         var didWallJump = buffer.readBoolean();
         server.execute(() -> {
-            boolean wallJumpEnabled = ModConfig.useWallJump || (ModConfig.enableEnchantments && ModConfig.enableWallJump);
+            boolean wallJumpEnabled = ModConfig.wallJumpEnabled || (ModConfig.enableEnchantments && ModConfig.wallJumpEnchantment);
             if (didWallJump && wallJumpEnabled) {
                 player.resetFallDistance();
                 player.causeFoodExhaustion((float) ServerConfig.exhaustionWallJump);
