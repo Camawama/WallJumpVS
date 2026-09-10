@@ -22,7 +22,7 @@ WallJump Unbound is a fork of [Wall-Jump TXF](https://github.com/jahirxtrap/wall
 
 <strong>Block list:</strong> blacklist or whitelist blocks by id, <code>#tag</code>, <code>*wildcard</code> or <code>/regex/</code>
 
-Every option is documented in <a href="CONFIG.md">CONFIG.md</a>.
+Every option is explained right next to its value in <code>config/walljumpunbound.toml</code>.
 
 <strong>Dependencies:</strong>
 

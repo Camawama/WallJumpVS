@@ -7,7 +7,6 @@ plugins {
 }
 
 version = "${version}-forge"
-jarJar.enable()
 base.archivesName = mod_id
 
 mixin {
@@ -84,9 +83,6 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly project(":common")
 
-    implementation fg.deobf("com.jahirtrap:configlibtxf:4.2.8-forge")
-    jarJar "com.jahirtrap:configlibtxf:[${configlibtxf_version}-forge,)"
-
     implementation fg.deobf("thedarkcolour:kotlinforforge:4.11.0")
     // Optional runtime dependency: the mod only touches VS through VSCompat when it is installed.
     // Core versions pinned to what VS 2.4.5 ships with (see its pom) for reproducible builds.
@@ -116,12 +112,8 @@ processResources {
     exclude '**/data/c/**', '**/data/fabric/**'
 }
 
-tasks.jarJar.setArchiveClassifier('')
-tasks.jarJar.finalizedBy('reobfJarJar')
-jar.finalizedBy('jarJar')
-
 publishMods {
-    file = tasks.jarJar.archiveFile
+    file = jar.archiveFile
     displayName = "${mod_name} ${project.version}"
     type = STABLE
     modLoaders.addAll("forge", "neoforge")

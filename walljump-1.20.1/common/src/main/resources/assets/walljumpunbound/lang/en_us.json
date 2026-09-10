@@ -7,55 +7,6 @@
   "enchantment.walljumpunbound.wall_jump.desc": "Jump from wall to wall",
   "enchantment.walljumpunbound.double_jump.desc": "Jump in mid-air to double jump",
   "enchantment.walljumpunbound.speed_boost.desc": "Boosts your speed while sprinting",
-
   "death.attack.walljumpunbound.wall_cling": "%1$s wrenched their arms catching a wall",
-  "death.attack.walljumpunbound.wall_cling.player": "%1$s wrenched their arms catching a wall while fleeing %2$s",
-
-  "walljumpunbound.config.title": "WallJump Unbound",
-  "walljumpunbound.config.category.wallJump": "Wall Jump",
-  "walljumpunbound.config.category.movement": "Other Movement",
-  "walljumpunbound.config.category.blockList": "Block List",
-  "walljumpunbound.config.category.valkyrienSkies": "Valkyrien Skies",
-  "walljumpunbound.config.category.enchantments": "Enchantments",
-  "walljumpunbound.config.enum.BlockListMode.DISABLED": "Disabled",
-  "walljumpunbound.config.enum.BlockListMode.BLACKLIST": "Blacklist",
-  "walljumpunbound.config.enum.BlockListMode.WHITELIST": "Whitelist",
-
-  "walljumpunbound.config.wallJumpEnabled.tooltip": "Lets every player cling to walls and wall jump. When off, only players wearing boots with the Wall Jump enchantment can (see the Enchantments tab). Server setting.",
-  "walljumpunbound.config.wallJumpHeight.tooltip": "Upward speed of a wall jump. 0.42 is a normal jump. Server setting.",
-  "walljumpunbound.config.maxWallJumps.tooltip": "Wall jumps allowed in a row before touching the ground again. 72000 is as good as unlimited. Server setting.",
-  "walljumpunbound.config.exhaustionWallJump.tooltip": "Hunger spent per wall jump, in exhaustion points. Sprinting costs about 0.1 per block. Server setting.",
-  "walljumpunbound.config.allowReClinging.tooltip": "Cling again to the wall you just jumped off. When off, you must first fall a block below your jump or reach a different wall. Server setting.",
-  "walljumpunbound.config.onFallWallCling.tooltip": "Catch a wall while falling faster than 0.8 blocks a tick. When off, a fast fall cannot be stopped by clinging. Server setting.",
-  "walljumpunbound.config.autoRotation.tooltip": "Snap your view to face straight away from the wall when you cling. Skipped on Valkyrien Skies ships, whose walls are rarely on a compass point. Client setting.",
-  "walljumpunbound.config.wallSlideDelay.tooltip": "Ticks a cling holds before you start sliding down (20 ticks = 1 second). Hanging from a ledge never slides. Server setting.",
-  "walljumpunbound.config.stopWallSlideDelay.tooltip": "Ticks of sliding before your grip gives out and you drop. 72000 is as good as unlimited. Server setting.",
-  "walljumpunbound.config.ledgeGrab.tooltip": "Grab the top of a wall that is within arm's reach. A ledge hold never slides, and turning more than 90 degrees away from it lets go. Server setting.",
-  "walljumpunbound.config.minFallDistance.tooltip": "Falls up to this many blocks do no damage (vanilla: 3). Catching a wall never hurts below it either. Server setting.",
-  "walljumpunbound.config.clingFallDamage.tooltip": "Catching a wall after a long fall hurts: a share of the damage the ground would have done. Armour does not stop it, Feather Falling does. Server setting.",
-  "walljumpunbound.config.clingFallDamageMinDistance.tooltip": "The fall, in blocks, from which catching a wall starts to hurt. Never lower than Min Fall Distance. Server setting.",
-  "walljumpunbound.config.clingFallDamageFraction.tooltip": "Share of the ground's fall damage dealt by catching a wall instead. 0.5 is half. Server setting.",
-  "walljumpunbound.config.wallClingPose.tooltip": "Draw the climbing pose on clinging players: one arm on the wall, or both hands over a ledge. Client setting.",
-  "walljumpunbound.config.playFallingSound.tooltip": "Rushing wind while falling fast. Client setting.",
-  "walljumpunbound.config.playSlideSound.tooltip": "Scrape the wall's own block sound while sliding down it. Client setting.",
-
-  "walljumpunbound.config.doubleJumpEnabled.tooltip": "Lets every player jump once more in mid-air. When off, only the Double Jump enchantment grants extra jumps. Server setting.",
-  "walljumpunbound.config.onFallDoubleJump.tooltip": "Allow the mid-air jump while falling faster than 0.8 blocks a tick. Server setting.",
-  "walljumpunbound.config.sprintSpeedBoost.tooltip": "Extra sprint speed for every player, on top of the Speed Boost enchantment. 0 is off. Server setting.",
-  "walljumpunbound.config.elytraSpeedBoost.tooltip": "Extra speed while holding sprint on an elytra, on top of the Speed Boost enchantment. 0 is off. Server setting.",
-  "walljumpunbound.config.stepAssist.tooltip": "Walk up single-block steps without jumping, even mid-air, and hop over fences. Server setting.",
-
-  "walljumpunbound.config.blockListMode.tooltip": "Disabled: any solid block can be clung to. Blacklist: any block except those listed. Whitelist: only the blocks listed. Server setting.",
-  "walljumpunbound.config.blockList.tooltip": "One entry per line: a block id (minecraft:ice), a block tag (#minecraft:logs), a wildcard (minecraft:*_glass) or a regular expression between slashes (/.*_ore/). Server setting.",
-
-  "walljumpunbound.config.enableVSCompat.tooltip": "Cling to and jump off Valkyrien Skies ship hulls, moving and rotated ones included. Does nothing without Valkyrien Skies. Client setting.",
-  "walljumpunbound.config.shipWallDetectionRange.tooltip": "How far past your hitbox ship walls are felt for, in blocks. Raise it if clinging to tilted hulls feels finicky. Client setting.",
-  "walljumpunbound.config.stickToMovingShips.tooltip": "Carry you along with the ship's movement and rotation while clinging. When off, the ship can sail out from under your grip. Client setting.",
-  "walljumpunbound.config.debugShipCling.tooltip": "Write ship cling and wall detection details to the game log, including why a cling was refused. For bug reports. Client setting.",
-
-  "walljumpunbound.config.enableEnchantments.tooltip": "Master switch. When off, none of the mod's enchantments turn up in enchanting tables or trades; items already enchanted keep working. Server setting.",
-  "walljumpunbound.config.wallJumpEnchantment.tooltip": "Boots enchantment that grants wall clinging and jumping to its wearer. Only matters when Wall Jump Enabled is off. Server setting.",
-  "walljumpunbound.config.doubleJumpEnchantment.tooltip": "Boots enchantment granting one extra mid-air jump per level, up to level II. Server setting.",
-  "walljumpunbound.config.speedBoostEnchantment.tooltip": "Boots and chestplate enchantment that speeds up sprinting and elytra flight. Server setting.",
-  "walljumpunbound.config.speedBoostMultiplier.tooltip": "How much speed each level of the Speed Boost enchantment adds. Server setting."
+  "death.attack.walljumpunbound.wall_cling.player": "%1$s wrenched their arms catching a wall while fleeing %2$s"
 }

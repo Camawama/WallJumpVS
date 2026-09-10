@@ -24,12 +24,12 @@
 #### Config
 
 - Renamed the confusing pairs: `useWallJump` → `wallJumpEnabled`, `useDoubleJump` → `doubleJumpEnabled`, `enableWallJump` → `wallJumpEnchantment`, `enableDoubleJump` → `doubleJumpEnchantment`, `enableSpeedBoost` → `speedBoostEnchantment`. Old keys in an existing JSON are ignored (defaults apply).
-- Options are grouped into Wall Jump / Other Movement / Block List / Valkyrien Skies / Enchantments tabs, every option has a tooltip (with a server/client note), and `CONFIG.md` at the repo root documents them all.
+- **The config is now a commented TOML file**, `config/walljumpunbound.toml`, written by Forge's config system (Forge Config API Port, bundled, on Fabric). Every option has its explanation, its range and a [server]/[client] note right above its value, and edits on disk are picked up while the game runs. The configlibtxf library and its in-game screen are gone (the Configured mod shows these files with the comments as tooltips, if you want a screen); the old `walljumpunbound.json` is ignored and can be deleted.
 - **Defaults:** `enableEnchantments` is now off (double jump was already off).
 
 #### Block list
 
-- Entries can be block ids, `#block/tags`, `*wild?cards*` or `/regular expressions/`; see `CONFIG.md`. Invalid entries are logged and skipped.
+- Entries can be block ids, `#block/tags`, `*wild?cards*` or `/regular expressions/`; the syntax is spelled out in the config file. Invalid entries are logged and skipped.
 
 ### Valkyrien Skies
 

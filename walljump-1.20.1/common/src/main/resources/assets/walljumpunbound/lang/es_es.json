@@ -7,55 +7,6 @@
   "enchantment.walljumpunbound.wall_jump.desc": "Saltar de pared en pared",
   "enchantment.walljumpunbound.double_jump.desc": "Salta en el aire para hacer un doble salto",
   "enchantment.walljumpunbound.speed_boost.desc": "Aumenta tu velocidad mientras corres",
-
   "death.attack.walljumpunbound.wall_cling": "%1$s se destrozó los brazos al agarrarse a una pared",
-  "death.attack.walljumpunbound.wall_cling.player": "%1$s se destrozó los brazos al agarrarse a una pared huyendo de %2$s",
-
-  "walljumpunbound.config.title": "WallJump Unbound",
-  "walljumpunbound.config.category.wallJump": "Salto de pared",
-  "walljumpunbound.config.category.movement": "Otros movimientos",
-  "walljumpunbound.config.category.blockList": "Lista de bloques",
-  "walljumpunbound.config.category.valkyrienSkies": "Valkyrien Skies",
-  "walljumpunbound.config.category.enchantments": "Encantamientos",
-  "walljumpunbound.config.enum.BlockListMode.DISABLED": "Desactivada",
-  "walljumpunbound.config.enum.BlockListMode.BLACKLIST": "Lista negra",
-  "walljumpunbound.config.enum.BlockListMode.WHITELIST": "Lista blanca",
-
-  "walljumpunbound.config.wallJumpEnabled.tooltip": "Permite a todos los jugadores aferrarse a las paredes y saltar desde ellas. Si está desactivado, solo pueden quienes lleven botas con el encantamiento Salto de pared (ver la pestaña Encantamientos). Ajuste del servidor.",
-  "walljumpunbound.config.wallJumpHeight.tooltip": "Velocidad ascendente del salto de pared. 0,42 equivale a un salto normal. Ajuste del servidor.",
-  "walljumpunbound.config.maxWallJumps.tooltip": "Saltos de pared seguidos permitidos antes de volver a tocar el suelo. 72000 equivale a ilimitado. Ajuste del servidor.",
-  "walljumpunbound.config.exhaustionWallJump.tooltip": "Hambre gastada por cada salto de pared, en puntos de agotamiento. Correr cuesta unos 0,1 por bloque. Ajuste del servidor.",
-  "walljumpunbound.config.allowReClinging.tooltip": "Volver a aferrarse a la pared de la que acabas de saltar. Si está desactivado, primero debes caer un bloque por debajo del salto o llegar a otra pared. Ajuste del servidor.",
-  "walljumpunbound.config.onFallWallCling.tooltip": "Agarrarse a una pared cayendo a más de 0,8 bloques por tick. Si está desactivado, una caída rápida no se puede frenar aferrándose. Ajuste del servidor.",
-  "walljumpunbound.config.autoRotation.tooltip": "Gira la vista para mirar en dirección contraria a la pared al aferrarte. Se omite en los barcos de Valkyrien Skies, cuyas paredes rara vez están alineadas con los ejes. Ajuste del cliente.",
-  "walljumpunbound.config.wallSlideDelay.tooltip": "Ticks que aguanta el agarre antes de empezar a resbalar (20 ticks = 1 segundo). Colgarse de un saliente nunca resbala. Ajuste del servidor.",
-  "walljumpunbound.config.stopWallSlideDelay.tooltip": "Ticks resbalando antes de que el agarre ceda y caigas. 72000 equivale a ilimitado. Ajuste del servidor.",
-  "walljumpunbound.config.ledgeGrab.tooltip": "Agarrarse al borde superior de una pared al alcance del brazo. Un agarre al saliente nunca resbala, y girarse más de 90 grados lo suelta. Ajuste del servidor.",
-  "walljumpunbound.config.minFallDistance.tooltip": "Las caídas de hasta esta cantidad de bloques no hacen daño (vanilla: 3). Agarrarse a una pared tampoco duele por debajo de ella. Ajuste del servidor.",
-  "walljumpunbound.config.clingFallDamage.tooltip": "Agarrarse a una pared tras una caída larga duele: una parte del daño que habría hecho el suelo. La armadura no lo evita, Caída de pluma sí. Ajuste del servidor.",
-  "walljumpunbound.config.clingFallDamageMinDistance.tooltip": "Caída, en bloques, a partir de la cual agarrarse a una pared empieza a doler. Nunca por debajo de Distancia mínima de caída. Ajuste del servidor.",
-  "walljumpunbound.config.clingFallDamageFraction.tooltip": "Parte del daño de caída del suelo que se recibe al agarrarse a una pared en su lugar. 0,5 es la mitad. Ajuste del servidor.",
-  "walljumpunbound.config.wallClingPose.tooltip": "Muestra la pose de escalada en los jugadores aferrados: un brazo en la pared, o ambas manos sobre un saliente. Ajuste del cliente.",
-  "walljumpunbound.config.playFallingSound.tooltip": "Viento al caer rápido. Ajuste del cliente.",
-  "walljumpunbound.config.playSlideSound.tooltip": "Reproduce el sonido del propio bloque al resbalar por la pared. Ajuste del cliente.",
-
-  "walljumpunbound.config.doubleJumpEnabled.tooltip": "Permite a todos los jugadores saltar una vez más en el aire. Si está desactivado, solo el encantamiento Salto doble concede saltos extra. Ajuste del servidor.",
-  "walljumpunbound.config.onFallDoubleJump.tooltip": "Permite el salto en el aire cayendo a más de 0,8 bloques por tick. Ajuste del servidor.",
-  "walljumpunbound.config.sprintSpeedBoost.tooltip": "Velocidad extra al correr para todos los jugadores, además del encantamiento Velocidad. 0 lo desactiva. Ajuste del servidor.",
-  "walljumpunbound.config.elytraSpeedBoost.tooltip": "Velocidad extra al mantener correr con élitros, además del encantamiento Velocidad. 0 lo desactiva. Ajuste del servidor.",
-  "walljumpunbound.config.stepAssist.tooltip": "Subir escalones de un bloque sin saltar, incluso en el aire, y pasar vallas. Ajuste del servidor.",
-
-  "walljumpunbound.config.blockListMode.tooltip": "Desactivada: cualquier bloque sólido sirve. Lista negra: cualquier bloque salvo los listados. Lista blanca: solo los bloques listados. Ajuste del servidor.",
-  "walljumpunbound.config.blockList.tooltip": "Una entrada por línea: un id de bloque (minecraft:ice), una etiqueta (#minecraft:logs), un comodín (minecraft:*_glass) o una expresión regular entre barras (/.*_ore/). Ajuste del servidor.",
-
-  "walljumpunbound.config.enableVSCompat.tooltip": "Aferrarse y saltar desde los cascos de los barcos de Valkyrien Skies, incluidos los que se mueven o están girados. No hace nada sin Valkyrien Skies. Ajuste del cliente.",
-  "walljumpunbound.config.shipWallDetectionRange.tooltip": "Hasta qué distancia más allá de tu hitbox se detectan las paredes de barco, en bloques. Súbelo si aferrarse a cascos inclinados resulta difícil. Ajuste del cliente.",
-  "walljumpunbound.config.stickToMovingShips.tooltip": "Te lleva con el movimiento y giro del barco mientras estás aferrado. Si está desactivado, el barco puede irse de debajo de tu agarre. Ajuste del cliente.",
-  "walljumpunbound.config.debugShipCling.tooltip": "Escribe en el registro los detalles del agarre a barcos y la detección de paredes, incluido por qué se rechazó un agarre. Para informes de errores. Ajuste del cliente.",
-
-  "walljumpunbound.config.enableEnchantments.tooltip": "Interruptor general. Si está desactivado, ningún encantamiento del mod aparece en mesas de encantar ni en intercambios; los objetos ya encantados siguen funcionando. Ajuste del servidor.",
-  "walljumpunbound.config.wallJumpEnchantment.tooltip": "Encantamiento de botas que concede aferrarse y saltar de pared a quien las lleva. Solo importa si Salto de pared activado está desactivado. Ajuste del servidor.",
-  "walljumpunbound.config.doubleJumpEnchantment.tooltip": "Encantamiento de botas que concede un salto extra en el aire por nivel, hasta el nivel II. Ajuste del servidor.",
-  "walljumpunbound.config.speedBoostEnchantment.tooltip": "Encantamiento de botas y peto que acelera la carrera y el vuelo con élitros. Ajuste del servidor.",
-  "walljumpunbound.config.speedBoostMultiplier.tooltip": "Cuánta velocidad añade cada nivel del encantamiento Velocidad. Ajuste del servidor."
+  "death.attack.walljumpunbound.wall_cling.player": "%1$s se destrozó los brazos al agarrarse a una pared huyendo de %2$s"
 }

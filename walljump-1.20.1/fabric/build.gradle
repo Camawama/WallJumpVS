@@ -14,6 +14,11 @@ repositories {
         url "https://api.modrinth.com/maven"
     }
     maven { url = 'https://maven.valkyrienskies.org' }
+    // Forge Config API Port: Forge's config system (commented TOML files) on Fabric
+    maven {
+        name 'Fuzs Mod Resources'
+        url 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
+    }
 }
 
 dependencies {
@@ -22,6 +27,10 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     compileOnly project(":common")
+
+    // Bundled: the config file is written by Forge's config system, provided on Fabric by this port.
+    modImplementation "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forgeconfigapiport_version}"
+    include "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forgeconfigapiport_version}"
 
     // Optional runtime dependency: the mod only touches VS through VSCompat when it is installed.
     modCompileOnly "org.valkyrienskies:valkyrienskies-120-fabric:${vs_version}"
@@ -61,7 +70,7 @@ def replaceProperties = [
         mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: version,
         mod_author: mod_author, mod_description: mod_description,
         mod_url: mod_url, mod_issues: mod_issues, side: fabric_side,
-        configlibtxf_version: configlibtxf_version, keybindfixtxf_version: keybindfixtxf_version
+        keybindfixtxf_version: keybindfixtxf_version
 ]
 
 processResources {
