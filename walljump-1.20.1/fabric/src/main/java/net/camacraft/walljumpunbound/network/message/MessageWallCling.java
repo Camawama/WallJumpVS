@@ -2,6 +2,7 @@ package net.camacraft.walljumpunbound.network.message;
 
 import io.netty.buffer.Unpooled;
 import net.camacraft.walljumpunbound.init.ModConfig;
+import net.camacraft.walljumpunbound.logic.WallClingPosture;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -39,6 +40,10 @@ public class MessageWallCling {
         server.execute(() -> {
             boolean wallJumpEnabled = ModConfig.useWallJump || (ModConfig.enableEnchantments && ModConfig.enableWallJump);
             if (!wallJumpEnabled) return;
+
+            // The server keeps the flag so the player's pose, and so the box mobs
+            // swing at, matches the one their client is drawing.
+            if (player instanceof WallClingPosture posture) posture.walljumpunbound$setWallClingPosture(clinging);
 
             FriendlyByteBuf out = new FriendlyByteBuf(Unpooled.buffer());
             out.writeVarInt(player.getId());

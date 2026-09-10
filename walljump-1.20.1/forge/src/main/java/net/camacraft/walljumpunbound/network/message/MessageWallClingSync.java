@@ -1,6 +1,7 @@
 package net.camacraft.walljumpunbound.network.message;
 
 import net.camacraft.walljumpunbound.logic.WallClingHolder;
+import net.camacraft.walljumpunbound.logic.WallClingPosture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -33,6 +34,7 @@ public record MessageWallClingSync(int entityId, boolean clinging, Direction wal
             if (minecraft.level == null) return;
             Entity entity = minecraft.level.getEntity(message.entityId);
             if (entity instanceof WallClingHolder holder) holder.walljumpunbound$setWallCling(message.clinging, message.wall);
+            if (entity instanceof WallClingPosture posture) posture.walljumpunbound$setWallClingPosture(message.clinging);
         }
     }
 }

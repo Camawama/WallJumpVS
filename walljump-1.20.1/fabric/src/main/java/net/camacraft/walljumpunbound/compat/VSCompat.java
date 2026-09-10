@@ -184,6 +184,16 @@ public final class VSCompat {
         clingShip.getWorldToShip().transformPosition(VectorConversionsMCKt.toJOML(pl.position()), clingAnchor);
     }
 
+    /**
+     * The clung ship's heading in degrees, read off its transform so it matches
+     * the rotation the player is actually being swung round by.
+     */
+    public static Double getClingShipYaw() {
+        if (clingShip == null) return null;
+        Vector3d forward = clingShip.getShipToWorld().transformDirection(new Vector3d(0.0, 0.0, 1.0));
+        return Math.toDegrees(Math.atan2(-forward.x, forward.z));
+    }
+
     public static void clearClingAnchor() {
         clingShip = null;
     }

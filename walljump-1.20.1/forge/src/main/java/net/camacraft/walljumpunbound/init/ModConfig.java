@@ -53,6 +53,8 @@ public class ModConfig extends TXFConfig {
     public static boolean enableVSCompat = true;
     @Entry(category = VALKYRIEN_SKIES, name = "Ship Wall Detection Range", min = 0.01, max = 0.5)
     public static double shipWallDetectionRange = 0.06;
+    @Entry(category = VALKYRIEN_SKIES, name = "Debug Ship Cling (logs to console)")
+    public static boolean debugShipCling = false;
     @Entry(category = VALKYRIEN_SKIES, name = "Cling Sticks To Moving Ships")
     public static boolean stickToMovingShips = true;
 

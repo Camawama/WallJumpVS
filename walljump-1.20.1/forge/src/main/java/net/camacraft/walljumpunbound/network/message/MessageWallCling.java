@@ -1,6 +1,7 @@
 package net.camacraft.walljumpunbound.network.message;
 
 import net.camacraft.walljumpunbound.init.ModConfig;
+import net.camacraft.walljumpunbound.logic.WallClingPosture;
 import net.camacraft.walljumpunbound.network.PacketHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,8 +35,12 @@ public record MessageWallCling(boolean clinging, Direction wall) {
         supplier.get().enqueueWork(() -> {
             ServerPlayer player = supplier.get().getSender();
             boolean wallJumpEnabled = ModConfig.useWallJump || (ModConfig.enableEnchantments && ModConfig.enableWallJump);
-            if (player != null && wallJumpEnabled)
+            if (player != null && wallJumpEnabled) {
+                // The server keeps the flag so the player's pose, and so the box
+                // mobs swing at, matches the one their client is drawing.
+                if (player instanceof WallClingPosture posture) posture.walljumpunbound$setWallClingPosture(message.clinging);
                 PacketHandler.sendToTracking(player, new MessageWallClingSync(player.getId(), message.clinging, message.wall));
+            }
         });
         supplier.get().setPacketHandled(true);
     }

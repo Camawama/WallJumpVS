@@ -1,6 +1,7 @@
 package net.camacraft.walljumpunbound.network.message;
 
 import net.camacraft.walljumpunbound.logic.WallClingHolder;
+import net.camacraft.walljumpunbound.logic.WallClingPosture;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -23,6 +24,7 @@ public class MessageWallClingSync {
             if (client.level == null) return;
             Entity entity = client.level.getEntity(entityId);
             if (entity instanceof WallClingHolder holder) holder.walljumpunbound$setWallCling(clinging, wall);
+            if (entity instanceof WallClingPosture posture) posture.walljumpunbound$setWallClingPosture(clinging);
         });
     }
 }
