@@ -112,6 +112,11 @@ processResources {
     exclude '**/data/c/**', '**/data/fabric/**'
 }
 
+// ForgeGradle only chains reobfJar off assemble/build, so a bare :forge:jar
+// (IDE builds included) would ship mojmap-named classes that crash in
+// production on the first @Shadow. Finalizing jar keeps every jar reobfuscated.
+jar.finalizedBy('reobfJar')
+
 publishMods {
     file = jar.archiveFile
     displayName = "${mod_name} ${project.version}"
